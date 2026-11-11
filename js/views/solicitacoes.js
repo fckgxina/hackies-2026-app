@@ -5,13 +5,13 @@
 
   const STATUS = ['Nova', 'Em análise', 'Em andamento', 'Concluída', 'Não realizada'];
   const COLS = { 'Nova': 'Novas solicitações', 'Em análise': 'Em análise', 'Em andamento': 'Em andamento', 'Concluída': 'Concluídas', 'Não realizada': 'Não realizadas' };
-  const CATEGORIAS = ['Pesquisa', 'Modificação', 'Correção', 'Nova ideia'];
+  const CATEGORIAS = ['Tarefa', 'Pesquisa', 'Modificação', 'Correção', 'Nova ideia'];
   const PRIORIDADES = ['Baixa', 'Média', 'Alta', 'Urgente'];
   const AREAS = ['Pesquisa', 'Desenvolvimento', 'Apresentação', 'Documentos e entregáveis', 'Gastos', 'Aplicação web', 'Outros'];
   const PRIO_ORD = { Urgente: 0, Alta: 1, 'Média': 2, Baixa: 3 };
 
-  const st = { filtros: { categoria: '', solicitante: '', prioridade: '', status: '', area: '', q: '' }, modo: null };
-  let cache = { tickets: [], comentarios: [], documentos: [] };
+  const st = { filtros: { categoria: '', solicitante: '', prioridade: '', status: '', area: '', entregavel: '', q: '' }, modo: null };
+  let cache = { tickets: [], comentarios: [], documentos: [], entregaveis: [] };
 
   const modo = () => st.modo || (() => { try { return localStorage.getItem('hk_tk_modo') || 'kanban'; } catch (e) { return 'kanban'; } })();
 
@@ -20,12 +20,13 @@
     return list.filter((t) =>
       (!f.categoria || t.categoria === f.categoria) && (!f.solicitante || t.solicitante_id === f.solicitante) &&
       (!f.prioridade || t.prioridade === f.prioridade) && (!f.status || t.status === f.status) && (!f.area || t.area === f.area) &&
+      (!f.entregavel || t.entregavel_id === f.entregavel) &&
       (!q || U.normalize(`${HK.ticketId(t.numero)} ${t.titulo} ${t.descricao}`).includes(q)));
   }
 
   async function load() {
-    const [tickets, comentarios, documentos] = await Promise.all([HK.db.list('tickets'), HK.db.list('ticket_comentarios'), HK.db.list('documentos')]);
-    cache = { tickets, comentarios, documentos };
+    const [tickets, comentarios, documentos, entregaveis] = await Promise.all([HK.db.list('tickets'), HK.db.list('ticket_comentarios'), HK.db.list('documentos'), HK.db.list('entregaveis', { order: 'prazo', asc: true })]);
+    cache = { tickets, comentarios, documentos, entregaveis };
   }
 
   /* ---------- mudança de status (com exigências) ---------- */
@@ -50,9 +51,9 @@
   }
 
   /* ---------- formulário (novo / edição) ---------- */
-  function formHTML(t, editavel) {
+  function formHTML(t, editavel, preset) {
     const dis = editavel ? '' : 'disabled';
-    const v = t || { prioridade: 'Média', categoria: '', solicitante_id: HK.state.me ? HK.state.me.id : '' };
+    const v = t || { prioridade: 'Média', categoria: '', solicitante_id: HK.state.me ? HK.state.me.id : '', ...(preset || {}) };
     return `<form class="form" novalidate>
       ${U.field('Título', `<input type="text" name="titulo" required maxlength="160" value="${U.esc(v.titulo)}" ${dis}>`, { req: true, full: true })}
       ${U.field('Categoria', `<select name="categoria" required ${dis}>${U.opts(CATEGORIAS, v.categoria, { empty: '— selecione —' })}</select>`, { req: true })}
@@ -69,6 +70,7 @@
       ${U.field('Link do tópico no Obsidian', `<input type="text" name="link_obsidian" placeholder="obsidian://… ou 01 - Pesquisa/…" value="${U.esc(v.link_obsidian)}" ${dis}>`, { hint: 'No Obsidian: botão direito na nota → "Copiar URL do Obsidian". Também aceita o caminho da nota.' })}
       ${U.field('Decisão técnica vinculada', `<input type="text" name="decisao_ref" placeholder="ex.: DEC-002" value="${U.esc(v.decisao_ref)}" ${dis}>`, { hint: 'ID do Histórico de Decisões (Obsidian).' })}
       ${U.field('Documento vinculado', `<select name="documento_id" ${dis}>${U.opts(cache.documentos, v.documento_id, { empty: '— nenhum —' })}</select>`)}
+      ${U.field('Entregável relacionado', `<select name="entregavel_id" ${dis}>${U.opts(cache.entregaveis, v.entregavel_id, { empty: '— nenhum —' })}</select>`, { hint: 'Use para tarefas de um entregável (aparecem no card do entregável).' })}
       ${t ? U.field('Observações', `<textarea name="observacoes" rows="2" ${dis}>${U.esc(v.observacoes)}</textarea>`, { full: true }) : ''}
       ${t ? `<div class="form-section">Encerramento</div>
         ${U.field('Resumo da solução', `<textarea name="resumo_solucao" rows="3" ${dis}>${U.esc(v.resumo_solucao)}</textarea>`, { full: true, hint: 'Obrigatório para concluir.' })}
@@ -79,7 +81,7 @@
 
   const limpar = (v) => {
     const o = { ...v };
-    ['solicitante_id', 'responsavel_id', 'documento_id', 'prazo', 'data_conclusao', 'area'].forEach((k) => { if (k in o && !o[k]) o[k] = null; });
+    ['solicitante_id', 'responsavel_id', 'documento_id', 'entregavel_id', 'prazo', 'data_conclusao', 'area'].forEach((k) => { if (k in o && !o[k]) o[k] = null; });
     return o;
   };
   const validar = (v) => {
@@ -89,9 +91,9 @@
     return e;
   };
 
-  function novo() {
+  function novo(preset) {
     const m = U.modal({
-      title: 'Nova solicitação', size: 'lg', body: formHTML(null, true),
+      title: 'Nova solicitação', size: 'lg', body: formHTML(null, true, preset),
       footer: '<button class="btn" data-close>Cancelar</button><button class="btn btn-primary" data-submit>Registrar solicitação</button>',
     });
     U.bindForm(m, async (v) => {
@@ -132,13 +134,13 @@
           <div><dt>Registrada por</dt><dd>${U.esc(HK.perfilNome(t.criado_por))}</dd></div>
           ${obs ? `<div><dt>Tópico no Obsidian</dt><dd><a href="${U.esc(obs)}">${U.icon('external')} Abrir no Obsidian</a></dd></div>` : ''}
         </dl>
-        ${editavel ? '' : '<div class="notice" style="margin-bottom:12px">Somente leitura: apenas quem registrou, o responsável vinculado ou um editor pode alterar.</div>'}
+        ${editavel ? '' : '<div class="notice" style="margin-bottom:var(--s3)">Somente leitura: apenas quem registrou, o responsável vinculado ou um editor pode alterar.</div>'}
         ${formHTML(t, editavel)}
         <div class="section-title">Comentários (${coms.length})</div>
         <div class="comments">${coms.map((c) => `<div class="comment"><div class="comment-head"><b>${U.esc(HK.perfilNome(c.autor_id))}</b>
             <span>${U.fmtDateTime(c.criado_em)}${HK.perm.admin() || c.autor_id === HK.state.profile.id ? ` · <a href="#" data-delc="${c.id}">excluir</a>` : ''}</span></div>
             <p>${U.esc(c.texto)}</p></div>`).join('') || '<p class="muted">Nenhum comentário.</p>'}</div>
-        <form class="comment-form" style="display:flex;gap:8px;margin-top:10px;align-items:flex-end">
+        <form class="comment-form" style="display:flex;gap:var(--s2);margin-top:var(--s3);align-items:flex-end">
           <label class="field" style="flex:1"><span class="sr-only">Novo comentário</span><textarea name="texto" rows="2" placeholder="Escreva um comentário…"></textarea></label>
           <button class="btn" type="submit">${U.icon('message')} Comentar</button></form>
         <div class="section-title">Histórico desta solicitação</div>
@@ -190,6 +192,7 @@
       { label: 'Descrição', value: (t) => t.descricao }, { label: 'Resumo da solução', value: (t) => t.resumo_solucao || '' },
       { label: 'Justificativa (não realizada)', value: (t) => t.motivo_nao_realizacao || '' }, { label: 'Link Obsidian', value: (t) => t.link_obsidian || '' },
       { label: 'Decisão', value: (t) => t.decisao_ref || '' },
+      { label: 'Entregável', value: (t) => (cache.entregaveis.find((e) => e.id === t.entregavel_id) || {}).nome || '' },
     ];
     U.download(`solicitacoes-${U.stamp()}.csv`, U.toCSV(list, cols), 'text/csv;charset=utf-8');
   }
@@ -200,7 +203,7 @@
     return `<button class="kcard" draggable="${HK.perm.canEdit(t)}" data-id="${t.id}">
       <div class="kcard-top"><span class="kcard-id">${HK.ticketId(t.numero)}</span>${U.chip(t.prioridade)}</div>
       <div class="kcard-title">${U.esc(t.titulo)}</div>
-      <div class="kcard-meta"><span class="tag">${U.esc(t.categoria)}</span><span>${U.esc(HK.nome(t.solicitante_id))}</span>
+      <div class="kcard-meta"><span class="tag">${U.esc(t.categoria)}</span>${t.entregavel_id ? `<span title="Entregável">${U.icon('flag')} ${U.esc((cache.entregaveis.find((e) => e.id === t.entregavel_id) || {}).nome || '')}</span>` : ''}<span>${U.esc(HK.nome(t.solicitante_id))}</span>
         <span>${U.fmtDate(U.isoFromTimestamp(t.criado_em))}</span>${t.prazo ? `<span class="${U.daysUntil(t.prazo) < 0 && !['Concluída', 'Não realizada'].includes(t.status) ? 'overdue' : ''}">${U.icon('clock')} ${U.fmtDate(t.prazo)}</span>` : ''}
         ${nc ? `<span>${U.icon('message')} ${nc}</span>` : ''}<span class="sr-only">Status: ${U.esc(t.status)}</span></div></button>`;
   }
@@ -228,6 +231,7 @@
           <select data-f="prioridade" aria-label="Prioridade">${U.opts(PRIORIDADES, f.prioridade, { empty: 'Prioridade: todas' })}</select>
           <select data-f="status" aria-label="Status">${U.opts(STATUS, f.status, { empty: 'Status: todos' })}</select>
           <select data-f="area" aria-label="Área">${U.opts(AREAS, f.area, { empty: 'Área: todas' })}</select>
+          <select data-f="entregavel" aria-label="Entregável">${U.opts(cache.entregaveis, f.entregavel, { empty: 'Entregável: todos' })}</select>
         </div>
         <span class="grow"></span>
         <div class="btn-group" role="group" aria-label="Modo de exibição">
@@ -235,12 +239,12 @@
           <button data-modo="lista" class="${m === 'lista' ? 'on' : ''}">${U.icon('list')} Lista</button></div>
         <button class="btn" id="tk-csv">${U.icon('download')} CSV</button>
       </div>
-      ${all.length && !list.length ? '<div class="notice" style="margin-bottom:12px">Nenhuma solicitação corresponde aos filtros.</div>' : ''}
+      ${all.length && !list.length ? '<div class="notice" style="margin-bottom:var(--s3)">Nenhuma solicitação corresponde aos filtros.</div>' : ''}
       ${!all.length ? U.empty('Nenhuma solicitação registrada. Use "Nova solicitação" para pedir uma pesquisa, modificação, correção ou registrar uma ideia.') :
         m === 'kanban' ? `<div class="kanban">${STATUS.map((s) => { const cs = list.filter((t) => t.status === s).sort((a, b) => PRIO_ORD[a.prioridade] - PRIO_ORD[b.prioridade] || b.criado_em.localeCompare(a.criado_em)); return `
           <section class="kcol" data-status="${s}" aria-label="${COLS[s]}"><div class="kcol-head">${U.chip(s)}<span class="sr-only">${COLS[s]}</span><span class="badge">${cs.length}</span></div>
-          <div class="kcol-body">${cs.map(card).join('') || '<p class="muted" style="font-size:12px;padding:4px">—</p>'}</div></section>`; }).join('')}</div>
-          <p class="muted" style="font-size:12px;margin-top:6px">Arraste um cartão para mudar o status (no celular, abra o cartão e altere o campo Status). Concluir exige o resumo da solução.</p>`
+          <div class="kcol-body">${cs.map(card).join('') || '<p class="muted" style="font-size:12px;padding:var(--s1)">—</p>'}</div></section>`; }).join('')}</div>
+          <p class="muted" style="font-size:12px;margin-top:var(--s2)">Arraste um cartão para mudar o status (no celular, abra o cartão e altere o campo Status). Concluir exige o resumo da solução.</p>`
         : `<div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Título</th><th>Categoria</th><th>Solicitante</th><th>Prioridade</th><th>Status</th><th>Criada</th><th>Prazo</th></tr></thead>
           <tbody>${list.map((t) => `<tr data-open="${t.id}" style="cursor:pointer"><td class="kcard-id">${HK.ticketId(t.numero)}</td><td class="title-cell"><b>${U.esc(t.titulo)}</b><small>${U.esc(t.area || '')}</small></td>
             <td>${U.esc(t.categoria)}</td><td>${U.esc(HK.nome(t.solicitante_id))}</td><td>${U.chip(t.prioridade)}</td><td>${U.chip(t.status)}</td>
@@ -277,6 +281,8 @@
       await load();
       if (!alive()) return;
       draw(el);
+      if (route.params.entregavel && !route.params.novo) { st.filtros.entregavel = route.params.entregavel; history.replaceState(null, '', '#/solicitacoes'); draw(el); }
+      if (route.params.novo) { history.replaceState(null, '', '#/solicitacoes'); novo({ categoria: 'Tarefa', entregavel_id: route.params.entregavel || '' }); }
       if (route.params.t) { history.replaceState(null, '', '#/solicitacoes'); detalhe(route.params.t); }
     },
   };

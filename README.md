@@ -9,7 +9,7 @@ Aplicação web (HTML + CSS + JavaScript, sem etapa de build) usada pelos três 
 | Pesquisas, referências, sínteses, matriz de evidências, questões em aberto | Obsidian |
 | Decisões técnicas, diário, reuniões, simulações e validações | Obsidian |
 | Solicitações (tickets e Kanban), gastos, cotações, contribuições | Aplicação web + Supabase |
-| Documentos (com versões e anexos), entregáveis e atividades | Aplicação web + Supabase |
+| Documentos de qualquer tipo (categorias editáveis, anexos e versões) e entregáveis | Aplicação web + Supabase |
 | Painel geral e apresentação HTML | Aplicação web |
 
 ## Por que Supabase
@@ -77,10 +77,10 @@ Enquanto `js/config.js` estiver vazio, a aplicação mostra a tela de configura�
 | Área | Funcionalidades |
 |---|---|
 | **Visão geral** | Solicitações pendentes, gastos realizados e planejados, valor individual estimado, próximos prazos (de todas as áreas), situação dos entregáveis e últimas atualizações |
-| **Solicitações** | Cadastro (Pesquisa, Modificação, Correção, Nova ideia) e Kanban com 5 colunas, em que arrastar o cartão muda o status.<br>• Concluir exige o resumo da solução; "Não realizada" exige justificativa.<br>• Comentários, responsável, prazo e filtros por categoria, solicitante, prioridade, status e área.<br>• Vínculos com o tópico no Obsidian, a decisão (DEC-xxx) e um documento.<br>• Histórico por ticket, exportação CSV e "Copiar resumo (Markdown)" para colar no Obsidian. |
+| **Solicitações** | Cadastro (Tarefa, Pesquisa, Modificação, Correção, Nova ideia), vínculo opcional a um entregável, e Kanban com 5 colunas, em que arrastar o cartão muda o status.<br>• Concluir exige o resumo da solução; "Não realizada" exige justificativa.<br>• Comentários, responsável, prazo e filtros por categoria, solicitante, prioridade, status e área.<br>• Vínculos com o tópico no Obsidian, a decisão (DEC-xxx) e um documento.<br>• Histórico por ticket, exportação CSV e "Copiar resumo (Markdown)" para colar no Obsidian. |
 | **Gastos** | Itens com foto (prévia antes de salvar), link de compra, fornecedor, status e subtotal automático.<br>• Cotações por item: destaque do menor preço e do menor total com frete, sem escolher automaticamente.<br>• Contribuições individuais e acerto entre os integrantes.<br>• Painel com indicadores, alertas e análises por categoria, por item, por orçamento, de compras e por integrante.<br>• Categorias editáveis, orçamento, CSV e resumo em Markdown. |
-| **Documentos** | Cadastro por categoria (Equipe, Competição, Entregáveis técnicos, Apresentação, Outros) com responsável, solicitante, prazo, os 8 status, data de envio e vínculo a entregável ou à competição.<br>• Versões com anexo ou link (V0.1 → V0.2 → V1.0…).<br>• Documentos **restritos**, visíveis só a editores e administradores. |
-| **Entregáveis e atividades** | Entregáveis oficiais com prazo, contagem regressiva e progresso das tarefas; tarefas com responsável, prazo, prioridade e status. |
+| **Documentos** | Qualquer documento da equipe, em **categorias editáveis** (Pesquisa, Currículos, Competição, Entregáveis, Apresentação, Administrativo, Outros…), com barra de filtro por categoria e lista subdividida.<br>• **Anexar** já no cadastro; na lista, **Visualizar** (PDF e imagem abrem no navegador) e **Baixar** o arquivo atual.<br>• Versões (V0.1 → V0.2 → V1.0…), responsável, prazo, status e vínculo a entregável.<br>• Documentos **restritos**, visíveis só a editores e administradores. |
+| **Entregáveis** | Entregáveis oficiais com prazo e status. O trabalho de cada um é pedido em **Solicitações** (categoria "Tarefa", vinculada ao entregável); o card mostra solicitações abertas e concluídas e os documentos vinculados. |
 | **Apresentação** | `apresentacao.html`: 13 slides, navegação por teclado, menu, barra de progresso e tela cheia. |
 | **Administração** | Usuários e papéis, integrantes (ordem e participação no rateio), histórico completo com **Restaurar/Reverter**, e backup em JSON e CSV. |
 

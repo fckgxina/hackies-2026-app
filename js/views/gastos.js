@@ -41,7 +41,7 @@
         <td class="right num">${U.brl(m.contribuido)}</td>
         <td class="right num">${m.saldo < 0 ? `<span class="overdue">falta ${U.brl(-m.saldo)}</span>` : m.saldo > 0 ? `<span style="color:var(--good-ink);font-weight:600">pagou a mais ${U.brl(m.saldo)}</span>` : '<span class="muted">em dia</span>'}</td></tr>`).join('')}
       </tbody><tfoot><tr><td>Total</td><td class="right num">${U.brl(r.membros.reduce((a, m) => a + m.devidoEstimado, 0))}</td><td class="right num">${U.brl(r.totalDevido)}</td><td class="right num">${U.brl(r.totais.contribuido)}</td><td></td></tr></tfoot></table></div>
-      <p class="muted" style="font-size:12px;margin-top:8px">Divisão igualitária entre os ${r.rateio.participantes} integrantes com acesso ativo ao sistema (Valor individual = total compartilhado ÷ ${r.rateio.participantes}).
+      <p class="muted" style="font-size:12px;margin-top:var(--s2)">Divisão igualitária entre os ${r.rateio.participantes} integrantes com acesso ativo ao sistema (Valor individual = total compartilhado ÷ ${r.rateio.participantes}).
         ${resto || restoEst ? `¹ Os centavos que não se dividem igualmente são atribuídos, um a um, na ordem fixa ${HK.integrantesRateio().filter((i) => i.participa_rateio).sort((a, b) => a.ordem - b.ordem).map((i) => U.esc(i.nome)).join(' → ')}; a soma é exatamente o total.` : ''}
         Gastos marcados como "não compartilhados" ficam integralmente com o responsável.</p>`;
   }
@@ -50,7 +50,7 @@
     const linhas = r.acertos.map((a) => `<li>${U.icon('wallet')}<span class="grow"><b>${U.esc(a.de)}</b> → <b>${U.esc(a.para)}</b></span><b class="num">${U.brl(a.valor)}</b></li>`).join('');
     const dif = r.diferencaCaixa;
     return `${linhas ? `<ul class="list">${linhas}</ul>` : '<p class="muted">Nenhum acerto necessário com os dados atuais.</p>'}
-      ${dif ? `<div class="notice" style="margin-top:10px">${dif > 0
+      ${dif ? `<div class="notice" style="margin-top:var(--s3)">${dif > 0
         ? `As contribuições superam os gastos realizados em <b>${U.brl(dif)}</b> (saldo em caixa ou adiantamento para compras futuras).`
         : `Os gastos realizados superam as contribuições registradas em <b>${U.brl(-dif)}</b>.`} Os acertos acima consideram apenas a diferença entre integrantes.</div>` : ''}`;
   }
@@ -80,9 +80,9 @@
         ${U.kpi('Recebidas', String(C.recebidos), `${C.pendentes} pendente(s) de recebimento`, { icon: 'check' })}
       </div>
 
-      ${r.alertas.length ? `<div class="card" style="margin-top:14px"><div class="card-head">${U.icon('alert')}<h3>Alertas e observações</h3></div>
+      ${r.alertas.length ? `<div class="card" style="margin-top:var(--s4)"><div class="card-head">${U.icon('alert')}<h3>Alertas e observações</h3></div>
         <div class="alerts">${r.alertas.map((a) => `<div class="alert alert-${a.nivel}">${U.icon(a.nivel === 'info' ? 'info' : 'alert')}<span>${U.esc(a.texto)}</span></div>`).join('')}</div>
-        <p class="muted" style="font-size:12px;margin-top:8px">Calculado apenas com os dados registrados. Não há comparação com preços de mercado.</p></div>` : ''}
+        <p class="muted" style="font-size:12px;margin-top:var(--s2)">Calculado apenas com os dados registrados. Não há comparação com preços de mercado.</p></div>` : ''}
 
       <div class="section-title">Divisão entre os integrantes</div>
       ${membrosTabela(r, { compacto: true })}
@@ -99,7 +99,7 @@
       <div class="section-title">Análise por categoria</div>
       <div class="card"><div class="card-head">${U.icon('chart')}<h3>Onde o dinheiro está sendo utilizado</h3>
           <div class="btn-group" role="group" aria-label="Base de cálculo"><button data-cat="estimado" class="${st.catModo === 'estimado' ? 'on' : ''}">Estimado</button><button data-cat="realizado" class="${st.catModo === 'realizado' ? 'on' : ''}">Realizado</button></div></div>
-        ${catRows.some((x) => x.value) ? U.hbars(catRows) + `<p class="muted" style="font-size:12px;margin-top:10px">Maior parcela: <b>${U.esc(catRows[0].label)}</b> (${catRows[0].sub}). Percentuais sobre o total ${st.catModo === 'estimado' ? 'estimado' : 'realizado'}.</p>` : U.empty(st.catModo === 'estimado' ? 'Cadastre itens para ver a distribuição por categoria.' : 'Nenhum gasto realizado ainda.')}
+        ${catRows.some((x) => x.value) ? U.hbars(catRows) + `<p class="muted" style="font-size:12px;margin-top:var(--s3)">Maior parcela: <b>${U.esc(catRows[0].label)}</b> (${catRows[0].sub}). Percentuais sobre o total ${st.catModo === 'estimado' ? 'estimado' : 'realizado'}.</p>` : U.empty(st.catModo === 'estimado' ? 'Cadastre itens para ver a distribuição por categoria.' : 'Nenhum gasto realizado ainda.')}
       </div>
 
       <div class="section-title">Análise por item</div>
@@ -108,7 +108,7 @@
         <div class="card"><div class="card-head"><h3>Maior valor unitário</h3></div>${lista(r.topUnitario, (i) => linhaItem(i, `<b>${U.brl(i.valor_unitario_centavos)}</b><br><small>× ${U.fmtQty(i.quantidade)}</small>`), 'Sem itens.')}</div>
         <div class="card"><div class="card-head"><h3>Maior quantidade comprada</h3></div>${lista(r.topQuantidade, (i) => linhaItem(i, `<b>${U.fmtQty(i.quantidade)} un.</b><br><small>${U.brl(i.subtotal)}</small>`), 'Nenhum item comprado ainda.')}</div>
       </div>
-      ${r.topCusto.length ? `<div class="table-wrap" style="margin-top:14px"><table class="table compact"><thead><tr><th>Item</th><th class="right">Valor unitário</th><th class="right">Qtd.</th><th class="right">Custo total</th><th class="right">% do estimado</th></tr></thead><tbody>
+      ${r.topCusto.length ? `<div class="table-wrap" style="margin-top:var(--s4)"><table class="table compact"><thead><tr><th>Item</th><th class="right">Valor unitário</th><th class="right">Qtd.</th><th class="right">Custo total</th><th class="right">% do estimado</th></tr></thead><tbody>
         ${[...D.itens].filter(F.isAtivo).map((i) => ({ ...i, sub: F.subtotal(i) })).sort((a, b) => b.sub - a.sub).slice(0, 12).map((i) => `<tr><td>${U.esc(i.nome)}</td><td class="right num">${U.brl(i.valor_unitario_centavos)}</td><td class="right num">${U.fmtQty(i.quantidade)}</td><td class="right num"><b>${U.brl(i.sub)}</b></td><td class="right num">${T.estimado ? U.pct((i.sub / T.estimado) * 100) : '—'}</td></tr>`).join('')}
       </tbody></table></div>` : ''}
 
@@ -134,7 +134,7 @@
           ${r.duplicidades.length ? `<ul class="list">${r.duplicidades.map((d) => `<li>${U.icon('copy')}<span class="grow"><b>${U.esc(d.nome)}</b><small>${d.itens.map((i) => `${U.esc(i.status)} · ${U.brl(F.subtotal(i))}`).join(' | ')}</small></span><span class="badge">${d.itens.length}×</span></li>`).join('')}</ul>` : '<p class="muted">Nenhum nome repetido entre itens ativos.</p>'}</div>
       </div>
 
-      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="g-md">${U.icon('copy')} Copiar resumo financeiro (Markdown)</button><button class="btn" id="g-csv">${U.icon('download')} Exportar itens (CSV)</button></div>`);
+      <div style="margin-top:var(--s4);display:flex;gap:var(--s2);flex-wrap:wrap"><button class="btn" id="g-md">${U.icon('copy')} Copiar resumo financeiro (Markdown)</button><button class="btn" id="g-csv">${U.icon('download')} Exportar itens (CSV)</button></div>`);
 
     el.querySelectorAll('[data-cat]').forEach((b) => b.addEventListener('click', () => { st.catModo = b.dataset.cat; draw(el, ''); }));
     el.querySelectorAll('[data-photo]').forEach((b) => b.addEventListener('click', () => verFoto(b.dataset.photo)));
@@ -233,7 +233,7 @@
         <div class="field full"><span>Fotografia do produto</span>
           <div class="photo-pick"><div class="photo-preview" id="f-prev">${i.foto_path && D.fotos[i.foto_path] ? `<img src="${U.esc(D.fotos[i.foto_path])}" alt="">` : U.icon('image')}</div>
             <div><input type="file" name="foto" accept="image/jpeg,image/png,image/webp" id="f-foto"><small class="hint" style="display:block">A imagem é reduzida para até 1600 px antes do envio.</small>
-            ${i.foto_path ? '<label class="check" style="margin-top:6px"><input type="checkbox" name="remover_foto"> Remover foto atual</label>' : ''}</div></div>
+            ${i.foto_path ? '<label class="check" style="margin-top:var(--s2)"><input type="checkbox" name="remover_foto"> Remover foto atual</label>' : ''}</div></div>
           <small class="field-error" id="f-foto-err"></small></div>
         ${U.field('Link de compra', `<input type="url" name="link_compra" placeholder="https://…" value="${U.esc(i.link_compra)}">`)}
         ${U.field('Loja ou fornecedor', `<input type="text" name="fornecedor" value="${U.esc(i.fornecedor)}">`)}
@@ -336,7 +336,7 @@
     const m = U.modal({
       title: `Cotações · ${item.nome}`, size: 'lg',
       body: `<p class="muted">Quantidade do item: <b>${U.fmtQty(item.quantidade)}</b> · valor atual: <b>${U.brl(item.valor_unitario_centavos)}</b>/un.${item.fornecedor ? ` (${U.esc(item.fornecedor)})` : ''}</p>
-        <div class="notice" style="margin-bottom:12px">${U.icon('info')} O menor preço é apenas destacado. Avalie também frete, prazo, reputação, garantia, especificações e compatibilidade com o projeto antes de decidir.</div>
+        <div class="notice" style="margin-bottom:var(--s3)">${U.icon('info')} O menor preço é apenas destacado. Avalie também frete, prazo, reputação, garantia, especificações e compatibilidade com o projeto antes de decidir.</div>
         ${linhas.length ? `<div class="table-wrap"><table class="table compact"><thead><tr><th>Loja</th><th class="right">Preço unit.</th><th class="right">Frete</th><th class="right">Total p/ qtd.</th><th>Prazo</th><th>Garantia</th><th>Disponível</th><th>Reputação</th><th>Especificações / compatibilidade</th><th class="actions"></th></tr></thead><tbody>
           ${linhas.map((c) => `<tr class="${c.menorTotal ? 'row-hl' : ''}">
             <td><b>${U.esc(c.loja)}</b>${c.link && U.isUrl(c.link) ? `<br><a href="${U.esc(c.link)}" target="_blank" rel="noopener noreferrer">${U.icon('external')} abrir</a>` : ''}</td>
@@ -409,8 +409,8 @@
     const r = resumo();
     el.insertAdjacentHTML('beforeend', `
       <div class="section-title" style="margin-top:0">Situação de cada integrante</div>${membrosTabela(r)}
-      <div class="card" style="margin-top:14px"><div class="card-head">${U.icon('wallet')}<h3>Resumo de acerto</h3></div>${acertoHTML(r)}
-        <p class="muted" style="font-size:12px;margin-top:10px">A divisão igualitária não muda com os pagamentos: as contribuições servem para acompanhar quem já pagou e quem tem valores pendentes.</p></div>
+      <div class="card" style="margin-top:var(--s4)"><div class="card-head">${U.icon('wallet')}<h3>Resumo de acerto</h3></div>${acertoHTML(r)}
+        <p class="muted" style="font-size:12px;margin-top:var(--s3)">A divisão igualitária não muda com os pagamentos: as contribuições servem para acompanhar quem já pagou e quem tem valores pendentes.</p></div>
       <div class="section-title">Pagamentos registrados</div>
       <div class="toolbar"><button class="btn btn-primary" id="c-new">${U.icon('plus')} Registrar contribuição</button><span class="grow"></span><button class="btn" id="c-csv">${U.icon('download')} CSV</button></div>
       ${D.contribs.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Integrante</th><th class="right">Valor</th><th>Item ou despesa</th><th>Observação</th><th>Registrado por</th><th class="actions"></th></tr></thead><tbody>
@@ -457,9 +457,9 @@
     el.insertAdjacentHTML('beforeend', `
       <div class="cards cols-2">
         <div class="card"><div class="card-head">${U.icon('wallet')}<h3>Orçamento do projeto</h3></div>
-          ${HK.perm.admin() ? `<form id="orc-form" class="form" novalidate style="grid-template-columns:1fr auto;align-items:end">
-            ${U.field('Valor total (R$)', `<input type="text" inputmode="decimal" name="orc" placeholder="sem orçamento definido" value="${U.esc(orc == null ? '' : U.centsToInput(orc))}">`, { hint: 'Deixe vazio para não usar orçamento.' })}
-            <button class="btn btn-primary" type="submit">Salvar</button></form>`
+          ${HK.perm.admin() ? `<form id="orc-form" novalidate><div class="field"><span>Valor total (R$)</span>
+            <div class="inline-row"><input type="text" inputmode="decimal" name="orc" aria-label="Valor total do orçamento (R$)" placeholder="sem orçamento definido" value="${U.esc(orc == null ? '' : U.centsToInput(orc))}"><button class="btn btn-primary" type="submit">Salvar</button></div>
+            <small class="hint">Deixe vazio para não usar orçamento.</small><small class="field-error"></small></div></form>`
             : `<p>${orc == null ? 'Nenhum orçamento definido.' : `Orçamento: <b>${U.brl(orc)}</b>`}</p><small class="muted">Somente o administrador altera o orçamento.</small>`}
         </div>
         <div class="card"><div class="card-head">${U.icon('tag')}<h3>Categorias de gastos</h3></div>
@@ -467,7 +467,7 @@
             ${HK.perm.editor() ? `<button class="btn-icon" data-up="${idx}" aria-label="Subir" ${idx === 0 ? 'disabled' : ''}>↑</button>
               <button class="btn-icon" data-ren="${c.id}" aria-label="Renomear">${U.icon('edit')}</button>
               <button class="btn-icon danger" data-cdel="${c.id}" aria-label="Excluir" ${uso(c.id) ? 'disabled title="Em uso"' : ''}>${U.icon('trash')}</button>` : ''}</li>`).join('')}</ul>
-          ${HK.perm.editor() ? `<form id="cat-form" style="display:flex;gap:8px;margin-top:10px"><input type="text" name="nome" placeholder="Nova categoria" aria-label="Nova categoria" maxlength="80"><button class="btn" type="submit">${U.icon('plus')} Adicionar</button></form>` : '<small class="muted">Editores e administradores podem editar as categorias.</small>'}
+          ${HK.perm.editor() ? `<form id="cat-form" class="inline-row" style="margin-top:var(--s3)"><input type="text" name="nome" placeholder="Nova categoria" aria-label="Nova categoria" maxlength="80"><button class="btn" type="submit">${U.icon('plus')} Adicionar</button></form>` : '<small class="muted">Editores e administradores podem editar as categorias.</small>'}
         </div>
       </div>`);
     const of = el.querySelector('#orc-form');

@@ -7,9 +7,9 @@
 
   HK.views.dashboard = {
     async render(el, route, alive) {
-      const [tickets, itens, contribs, entregaveis, tarefas, documentos, hist] = await Promise.all([
+      const [tickets, itens, contribs, entregaveis, documentos, hist] = await Promise.all([
         HK.db.list('tickets'), HK.db.list('itens'), HK.db.list('contribuicoes'), HK.db.list('entregaveis', { order: 'prazo', asc: true }),
-        HK.db.list('tarefas'), HK.db.list('documentos'), HK.db.list('historico', { limit: 10 }),
+        HK.db.list('documentos'), HK.db.list('historico', { limit: 10 }),
       ]);
       if (!alive()) return;
 
@@ -20,14 +20,13 @@
       // prazos de todas as áreas
       const prazos = [
         ...entregaveis.filter((e) => e.prazo && !['Concluído', 'Enviado'].includes(e.status)).map((e) => ({ tipo: 'Entregável', nome: e.nome, prazo: e.prazo, status: e.status, href: '#/entregaveis' })),
-        ...tarefas.filter((t) => t.prazo && t.status !== 'Concluída').map((t) => ({ tipo: 'Tarefa', nome: t.titulo, prazo: t.prazo, status: t.status, href: '#/entregaveis' })),
         ...documentos.filter((d) => d.prazo && !['Enviado', 'Aprovado'].includes(d.status)).map((d) => ({ tipo: 'Documento', nome: d.nome, prazo: d.prazo, status: d.status, href: '#/documentos' })),
         ...pend.filter((t) => t.prazo).map((t) => ({ tipo: 'Solicitação', nome: `${HK.ticketId(t.numero)} ${t.titulo}`, prazo: t.prazo, status: t.status, href: `#/solicitacoes?t=${t.id}` })),
       ].sort((a, b) => a.prazo.localeCompare(b.prazo)).slice(0, 7);
       const prox = prazos.find((p) => U.daysUntil(p.prazo) >= 0);
 
       const prazoCls = (iso) => { const n = U.daysUntil(iso); return n < 0 ? 'overdue' : n <= 3 ? 'soon' : 'muted'; };
-      const nTarefas = (eid) => { const ts = tarefas.filter((t) => t.entregavel_id === eid); return [ts.filter((t) => t.status === 'Concluída').length, ts.length]; };
+      const nTarefas = (eid) => { const ts = tickets.filter((t) => t.entregavel_id === eid && t.status !== 'Não realizada'); return [ts.filter((t) => t.status === 'Concluída').length, ts.length]; };
       const nDocs = (eid) => documentos.filter((d) => d.entregavel_id === eid).length;
 
       el.innerHTML = `
@@ -72,7 +71,7 @@
           </div>
           <div class="card"><div class="card-head">${U.icon('flag')}<h3>Situação dos entregáveis</h3><a href="#/entregaveis" class="btn btn-sm btn-ghost">Abrir</a></div>
             ${entregaveis.length ? `<ul class="list">${entregaveis.map((e) => { const [ok, tot] = nTarefas(e.id); return `<li>
-              <span class="grow"><b>${U.esc(e.nome)}</b><small>${U.esc(e.etapa || '')}${e.prazo ? ` · ${U.fmtDate(e.prazo)}` : ''} · ${tot ? `${ok}/${tot} tarefas` : 'sem tarefas'} · ${nDocs(e.id)} doc.</small></span>
+              <span class="grow"><b>${U.esc(e.nome)}</b><small>${U.esc(e.etapa || '')}${e.prazo ? ` · ${U.fmtDate(e.prazo)}` : ''} · ${tot ? `${ok}/${tot} solicitações concluídas` : 'sem solicitações'} · ${nDocs(e.id)} doc.</small></span>
               ${U.chip(e.status)}</li>`; }).join('')}</ul>` : U.empty('Nenhum entregável cadastrado.')}
           </div>
         </div>
@@ -89,7 +88,7 @@
               <div><b>${U.esc(x.quem)}</b> ${U.esc(x.texto)}${x.detalhe ? `<small>${U.esc(x.detalhe)}</small>` : ''}<small>${U.relTime(h.em)}</small></div></li>`; }).join('')}</ul>` : U.empty('Nenhuma alteração registrada ainda.')}
           </div>
         </div>
-        <p class="muted" style="margin-top:18px">Conhecimento técnico (pesquisas, decisões, diário): vault Obsidian <b>${U.esc((window.HK_CONFIG || {}).obsidianVault || 'HACKIES 2026')}</b> —
+        <p class="muted" style="margin-top:var(--s5)">Conhecimento técnico (pesquisas, decisões, diário): vault Obsidian <b>${U.esc((window.HK_CONFIG || {}).obsidianVault || 'HACKIES 2026')}</b> —
           <a href="${U.esc(HK.obsidianHref('00 - Painel Principal'))}">abrir o Painel Principal no Obsidian</a>.</p>`;
     },
   };

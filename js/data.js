@@ -110,6 +110,7 @@
         t: {
           perfis: [{ ...DEMO_USER, criado_em: now() }], integrantes: ints, categorias_gasto: cats,
           configuracoes: [{ chave: 'orcamento_centavos', valor: null, atualizado_em: now() }],
+          categorias_documento: ['Pesquisa', 'Currículos', 'Competição', 'Entregáveis', 'Apresentação', 'Administrativo', 'Outros'].map((nome, i) => ({ id: uuid(), nome, ordem: i + 1, criado_em: now() })),
           itens: [], cotacoes: [], contribuicoes: [], entregaveis: ent, documentos: [], documento_versoes: [],
           tarefas: [], tickets: [], ticket_comentarios: [], historico: [],
         },
@@ -193,7 +194,7 @@
         if (!r.criado_em) r.criado_em = now();
         if (['itens', 'cotacoes', 'contribuicoes', 'entregaveis', 'documentos', 'tarefas', 'tickets', 'configuracoes'].includes(table)) r.atualizado_em = now();
         if (table === 'ticket_comentarios' && !r.autor_id) r.autor_id = DEMO_USER.id;
-        else if (!('criado_por' in r) && table !== 'configuracoes' && table !== 'integrantes' && table !== 'categorias_gasto') r.criado_por = DEMO_USER.id;
+        else if (!('criado_por' in r) && !['configuracoes', 'integrantes', 'categorias_gasto', 'categorias_documento'].includes(table)) r.criado_por = DEMO_USER.id;
         if (table === 'tickets') { if (r.numero == null) r.numero = ++db.seq.tickets; else db.seq.tickets = Math.max(db.seq.tickets, r.numero); }
         constraints(table, r);
         db.t[table].push(r);

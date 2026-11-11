@@ -55,7 +55,7 @@
   const TAB = {
     itens: ['item de gasto', 'nome'], cotacoes: ['cotação', 'loja'], contribuicoes: ['contribuição', null],
     entregaveis: ['entregável', 'nome'], documentos: ['documento', 'nome'], documento_versoes: ['versão de documento', 'versao'],
-    tarefas: ['tarefa', 'titulo'], tickets: ['solicitação', 'titulo'], categorias_gasto: ['categoria', 'nome'],
+    tarefas: ['tarefa', 'titulo'], tickets: ['solicitação', 'titulo'], categorias_gasto: ['categoria de gasto', 'nome'], categorias_documento: ['categoria de documento', 'nome'],
     configuracoes: ['configuração', 'chave'], integrantes: ['integrante', 'nome'], perfis: ['usuário', 'nome'],
   };
   const CAMPOS = {
@@ -105,7 +105,7 @@
     { route: 'solicitacoes', label: 'Solicitações', icon: 'inbox', view: 'solicitacoes' },
     { route: 'gastos', label: 'Gastos do projeto', icon: 'wallet', view: 'gastos' },
     { route: 'documentos', label: 'Documentos', icon: 'file', view: 'documentos' },
-    { route: 'entregaveis', label: 'Entregáveis e atividades', icon: 'flag', view: 'entregaveis' },
+    { route: 'entregaveis', label: 'Entregáveis', icon: 'flag', view: 'entregaveis' },
     { sep: true },
     { acao: 'apresentacao', label: 'Apresentação', icon: 'slides', tag: 'Em breve' },
     { route: 'admin', label: 'Administração', icon: 'settings', view: 'admin' },
@@ -176,7 +176,7 @@
         <li>Recarregue esta página.</li>
       </ol>
       <p class="muted">O passo a passo completo está em <code>README.md</code>.</p>
-      <div class="notice" style="margin:16px 0">${U.icon('info')} <b>Modo demonstração:</b> permite experimentar todas as telas agora, mas os dados ficam <b>somente neste navegador</b>, não são compartilhados e podem ser perdidos.</div>
+      <div class="notice" style="margin:var(--s4) 0">${U.icon('info')} <b>Modo demonstração:</b> permite experimentar todas as telas agora, mas os dados ficam <b>somente neste navegador</b>, não são compartilhados e podem ser perdidos.</div>
       <button class="btn" id="demo-btn">${U.icon('box')} Experimentar em modo demonstração</button>
     </div>`);
     g.querySelector('#demo-btn').addEventListener('click', () => { localStorage.setItem('hk_mode', 'demo'); location.reload(); });

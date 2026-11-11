@@ -4,9 +4,9 @@
   const U = HK.util;
 
   const TABS = [['', 'Usuários e permissões'], ['integrantes', 'Integrantes'], ['historico', 'Histórico de alterações'], ['backup', 'Backup e exportação']];
-  const TABELAS_BACKUP = ['perfis', 'integrantes', 'configuracoes', 'categorias_gasto', 'itens', 'cotacoes', 'contribuicoes', 'entregaveis',
+  const TABELAS_BACKUP = ['perfis', 'integrantes', 'configuracoes', 'categorias_gasto', 'categorias_documento', 'itens', 'cotacoes', 'contribuicoes', 'entregaveis',
     'documentos', 'documento_versoes', 'tarefas', 'tickets', 'ticket_comentarios', 'historico'];
-  const RESTAURAVEIS = ['itens', 'cotacoes', 'contribuicoes', 'entregaveis', 'documentos', 'documento_versoes', 'tarefas', 'tickets', 'categorias_gasto'];
+  const RESTAURAVEIS = ['itens', 'cotacoes', 'contribuicoes', 'entregaveis', 'documentos', 'documento_versoes', 'tarefas', 'tickets', 'categorias_gasto', 'categorias_documento'];
   const st = { tabela: '', usuario: '', acao: '', limite: 150 };
 
   /* ---------- usuários ---------- */
@@ -16,7 +16,7 @@
     const adm = HK.perm.admin();
     const vinc = (pid) => HK.state.integrantes.find((i) => i.perfil_id === pid);
     el.insertAdjacentHTML('beforeend', `
-      ${adm ? '' : '<div class="notice" style="margin-bottom:12px">Somente o administrador altera usuários e permissões.</div>'}
+      ${adm ? '' : '<div class="notice" style="margin-bottom:var(--s3)">Somente o administrador altera usuários e permissões.</div>'}
       <div class="table-wrap"><table class="table"><thead><tr><th>Usuário</th><th>E-mail</th><th>Papel</th><th>Ativo</th><th>Integrante vinculado</th></tr></thead><tbody>
         ${perfis.map((p) => { const self = p.id === HK.state.profile.id; const dis = !adm || self ? 'disabled' : ''; const v = vinc(p.id); return `<tr>
           <td>${adm ? `<input type="text" data-nome="${p.id}" value="${U.esc(p.nome)}" aria-label="Nome" style="min-width:150px">` : `<b>${U.esc(p.nome)}</b>`}${self ? ' <small class="muted">(você)</small>' : ''}</td>
@@ -25,7 +25,7 @@
           <td><label class="check"><input type="checkbox" data-ativo="${p.id}" ${p.ativo ? 'checked' : ''} ${dis}> ${p.ativo ? 'ativo' : 'inativo'}</label></td>
           <td><select data-vinc="${p.id}" ${adm ? '' : 'disabled'} aria-label="Integrante vinculado">${U.opts(HK.state.integrantes, v ? v.id : '', { empty: '— nenhum —' })}</select></td></tr>`; }).join('')}
       </tbody></table></div>
-      <p class="muted" style="font-size:12px;margin-top:8px">Novos usuários são criados no painel do Supabase (Authentication → Users → Add user) e entram <b>inativos</b> até serem ativados aqui. O vínculo com o integrante define o "responsável" de cada usuário (permite atualizar o que foi atribuído a ele).</p>
+      <p class="muted" style="font-size:12px;margin-top:var(--s2)">Novos usuários são criados no painel do Supabase (Authentication → Users → Add user) e entram <b>inativos</b> até serem ativados aqui. O vínculo com o integrante define o "responsável" de cada usuário (permite atualizar o que foi atribuído a ele).</p>
 
       <div class="section-title">O que cada papel pode fazer</div>
       <div class="table-wrap"><table class="table compact"><thead><tr><th>Ação</th><th>Membro</th><th>Editor</th><th>Administrador</th></tr></thead><tbody>
@@ -40,7 +40,7 @@
           ['Usuários, papéis, integrantes, orçamento, restauração e backup', '—', '—', '✓'],
         ].map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
       </tbody></table></div>
-      <p class="muted" style="font-size:12px;margin-top:8px">Estas regras são aplicadas pelo banco de dados (RLS), não apenas pela interface.</p>`);
+      <p class="muted" style="font-size:12px;margin-top:var(--s2)">Estas regras são aplicadas pelo banco de dados (RLS), não apenas pela interface.</p>`);
 
     if (!adm) return;
     const save = async (fn, ok) => { try { await fn(); U.toast(ok); await HK.loadRefs(); } catch (e) { U.toast(U.errMsg(e), 'error'); } HK.refresh(); };
@@ -70,9 +70,9 @@
           <td>${i.participa_rateio ? U.chip('Sim', 'good') : U.chip(acesso ? 'Não (exceção manual)' : 'Não (sem login ativo)', 'neutral')}</td>
           <td><label class="check"><input type="checkbox" data-rateio="${i.id}" ${orig.participa_rateio !== false ? '' : 'checked'} ${adm ? '' : 'disabled'}> retirar da divisão</label></td></tr>`; }).join('')}
       </tbody></table></div>
-      <p class="muted" style="font-size:12px;margin-top:8px"><b>Regra:</b> dividem os gastos compartilhados os integrantes com <b>login ativo vinculado</b> (aba "Usuários e permissões"). Desativar o acesso de alguém retira essa pessoa da divisão; a exceção manual retira alguém mesmo com acesso.
+      <p class="muted" style="font-size:12px;margin-top:var(--s2)"><b>Regra:</b> dividem os gastos compartilhados os integrantes com <b>login ativo vinculado</b> (aba "Usuários e permissões"). Desativar o acesso de alguém retira essa pessoa da divisão; a exceção manual retira alguém mesmo com acesso.
         A ordem define a quem vão os centavos residuais da divisão (um centavo para cada, a partir do primeiro). Integrantes não são excluídos, para preservar o histórico financeiro.</p>
-      ${adm ? `<form id="int-form" style="display:flex;gap:8px;margin-top:12px;max-width:460px"><input type="text" name="nome" placeholder="Novo integrante" aria-label="Novo integrante"><button class="btn" type="submit">${U.icon('plus')} Adicionar</button></form>` : ''}`);
+      ${adm ? `<form id="int-form" class="inline-row" style="margin-top:var(--s3);max-width:460px"><input type="text" name="nome" placeholder="Novo integrante" aria-label="Novo integrante"><button class="btn" type="submit">${U.icon('plus')} Adicionar</button></form>` : ''}`);
     if (!adm) return;
     const save = async (fn) => { try { await fn(); await HK.loadRefs(); U.toast('Integrante atualizado.'); } catch (e) { U.toast(U.errMsg(e), 'error'); } HK.refresh(); };
     el.querySelectorAll('[data-ordem]').forEach((i) => i.addEventListener('change', () => { const n = parseInt(i.value, 10); if (n > 0) save(() => HK.db.update('integrantes', i.dataset.ordem, { ordem: n })); }));
@@ -104,8 +104,8 @@
           <td class="nowrap">${U.fmtDateTime(h.em)}</td><td>${U.esc(x.quem)}</td><td>${U.esc(x.texto)}</td><td><small>${U.esc(x.detalhe)}</small></td>
           ${adm ? `<td class="actions">${pode ? `<button class="btn btn-sm" data-rest="${h.id}" title="${h.acao === 'DELETE' ? 'Recriar o registro excluído' : 'Voltar aos valores anteriores a esta alteração'}">${U.icon('restore')} ${h.acao === 'DELETE' ? 'Restaurar' : 'Reverter'}</button>` : ''}</td>` : ''}</tr>`; }).join('')}
       </tbody></table></div>
-      ${rows.length >= st.limite ? `<button class="btn" id="h-more" style="margin-top:12px">Carregar mais</button>` : ''}` : U.empty('Nenhuma alteração registrada com esses filtros.')}
-      <p class="muted" style="font-size:12px;margin-top:8px">O histórico é gravado automaticamente pelo banco (inclusive valores anteriores), não pode ser editado e permite recuperar registros excluídos.</p>`);
+      ${rows.length >= st.limite ? `<button class="btn" id="h-more" style="margin-top:var(--s3)">Carregar mais</button>` : ''}` : U.empty('Nenhuma alteração registrada com esses filtros.')}
+      <p class="muted" style="font-size:12px;margin-top:var(--s2)">O histórico é gravado automaticamente pelo banco (inclusive valores anteriores), não pode ser editado e permite recuperar registros excluídos.</p>`);
     el.querySelectorAll('[data-h]').forEach((s) => s.addEventListener('change', () => { st[s.dataset.h] = s.value; st.limite = 150; HK.refresh(); }));
     const more = el.querySelector('#h-more'); if (more) more.addEventListener('click', () => { st.limite += 150; HK.refresh(); });
     el.querySelector('#h-csv').addEventListener('click', () => U.download(`historico-${U.stamp()}.csv`, U.toCSV(rows, [
@@ -138,9 +138,9 @@
           <button class="btn btn-primary" id="b-json">${U.icon('download')} Baixar backup JSON</button></div>
         <div class="card"><div class="card-head">${U.icon('list')}<h3>Tabelas em CSV (para reimportação)</h3></div>
           <p>CSV padrão (vírgula, valores brutos) compatível com o importador do Supabase (Table Editor → Insert → Import data from CSV).</p>
-          <div style="display:flex;flex-wrap:wrap;gap:6px">${TABELAS_BACKUP.map((t) => `<button class="btn btn-sm" data-csv="${t}">${t}</button>`).join('')}</div></div>
+          <div style="display:flex;flex-wrap:wrap;gap:var(--s2)">${TABELAS_BACKUP.map((t) => `<button class="btn btn-sm" data-csv="${t}">${t}</button>`).join('')}</div></div>
       </div>
-      <div class="notice" style="margin-top:14px">${U.icon('info')} Fotografias e anexos ficam no armazenamento do Supabase (buckets <code>fotos-itens</code> e <code>documentos</code>) e não entram no JSON; o backup guarda os caminhos. Para copiar os arquivos, use o painel do Supabase (Storage).
+      <div class="notice" style="margin-top:var(--s4)">${U.icon('info')} Fotografias e anexos ficam no armazenamento do Supabase (buckets <code>fotos-itens</code> e <code>documentos</code>) e não entram no JSON; o backup guarda os caminhos. Para copiar os arquivos, use o painel do Supabase (Storage).
         Recuperação: registros excluídos podem ser restaurados em "Histórico de alterações"; uma base inteira pode ser recriada executando <code>supabase/schema.sql</code> e importando os CSV.</div>`);
     const listAll = async (t) => (HK.db.listAll ? HK.db.listAll(t) : HK.db.list(t));
     el.querySelector('#b-json').addEventListener('click', async (e) => {

@@ -21,7 +21,7 @@ Regras:
 4. As larguras são medidas na **área de conteúdo** (*container query* em `.view`), não na janela, porque o menu lateral ocupa espaço.
 5. Cards da mesma fileira têm **a mesma altura**.
 
-Contagens atuais: Visão geral com 6 atalhos (`cols-6`), 4 indicadores (`cols-4`) e painéis em `cols-2`. Solicitações com 6 indicadores (`cols-6`). Gastos com 8 indicadores (`cols-4`), análise por item em `cols-3`, orçamento em `cols-4` e compras em `cols-2` (5 cards: o último ocupa a linha). Documentos com 4 indicadores (`cols-4`). Entregáveis em `cols-3`.
+Contagens atuais: Visão geral com 6 atalhos (`cols-6`), 4 indicadores (`cols-4`) e painéis em `cols-2`. Solicitações com 6 indicadores (`cols-6`). Gastos com 8 indicadores (`cols-4`), análise por item em `cols-3`, orçamento em `cols-4` e compras em `cols-2` (5 cards: o último ocupa a linha). Documentos com 4 indicadores (`cols-4`), barra de categorias e lista subdividida por categoria. Entregáveis em `cols-3` (cards com rodapé alinhado: andamento das solicitações + ações).
 
 ## 2. Anatomia dos componentes
 
@@ -34,6 +34,13 @@ Contagens atuais: Visão geral com 6 atalhos (`cols-6`), 4 indicadores (`cols-4`
 - **Linha de lista** (`.list li`): elemento à esquerda opcional (tag ou miniatura), bloco central com **título em cima e detalhe embaixo** (nunca na mesma linha) e valor ou status à direita.
 - **Título de seção** (`.section-title`): um título de verdade, em frase normal, sem caixa-alta nem rótulo pequeno acima. Tem mais espaço acima (32 px) que abaixo (12 px).
 - **Status**: sempre `HK.util.chip(texto)`, com cor de estado mais texto, nunca só cor. O tom de cada status fica na tabela `TONE` em `js/util.js`.
+
+## 2.1 Controles, formulários e tabelas
+
+- **Altura única de controle** (`--h-control`, 36 px): campos, seletores, botões e grupos de botões. Numa mesma linha, todos têm a mesma altura e o mesmo centro.
+- **Campo + botão** na mesma linha usa `.inline-row`: o botão alinha com o **campo**, e a ajuda e o erro ficam **embaixo** da linha, nunca ao lado do botão.
+- **Tabelas:** coluna numérica tem título **e** valores à direita (`th.right` e `td.right`); texto fica à esquerda. Título e valor de uma coluna nunca divergem.
+- **Barra de categorias** (`.cat-bar`): "Todos" + uma pílula por categoria com contagem, mais "Categorias" para gerenciar. Rola na horizontal no celular.
 
 ## 3. Espaçamento
 
@@ -76,6 +83,7 @@ Grafite industrial com **âmbar de energia**. O âmbar é **exclusivo da ação*
 
 - **PC com mouse (≥ 861 px):** o menu fica recolhido num trilho de 64 px, só com ícones, e **abre ao passar o mouse** ou ao receber foco pelo teclado, **por cima do conteúdo**, sem empurrar a página.
 - **Tablet, celular e telas de toque:** o menu fica escondido e abre pelo botão ☰ como gaveta; toque fora para fechar.
+- **Largura:** o conteúdo é fluido (sem largura máxima) e termina na mesma margem do cabeçalho em qualquer zoom.
 - **Item sem conteúdo:** fica no menu com a etiqueta "Em breve" e, ao clicar, mostra um aviso. Hoje isso vale para a Apresentação; o arquivo `apresentacao.html` está guardado, sem link.
 
 ## 6. Verificação obrigatória
