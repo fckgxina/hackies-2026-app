@@ -1,5 +1,7 @@
 # HackIES 2026 · Aplicação de gestão do projeto (D02)
 
+**Endereço:** <https://fckgxina.github.io/hackies-2026-app/> (login com o usuário criado pelo administrador).
+
 Aplicação web (HTML + CSS + JavaScript, sem etapa de build) usada pelos três integrantes para o trabalho operacional do projeto. Os dados ficam num banco **Supabase** compartilhado. O conhecimento técnico e científico continua no vault Obsidian `HACKIES 2026`.
 
 | Recurso | Onde fica |
