@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apresentação D02 — HackIES 2026</title>
+<meta name="description" content="Apresentação de apoio do Desafio D02 (Alimentação elétrica de ROVs) — HackIES 2026. Material de apoio; não substitui os entregáveis oficiais.">
+<!--
+  APRESENTAÇÃO D02 — HackIES 2026
+  Arquivo único e autocontido (sem dependências externas). Abre via file:// e offline.
+
+  COMO EDITAR
+  - Cada slide é uma <section class="slide" data-title="..."> dentro de #stage.
+    O atributo data-title alimenta o menu de seções. A ordem no HTML é a ordem dos slides.
+  - Para adicionar um slide, copie uma <section> existente; numeração, menu e progresso se ajustam sozinhos.
+  - Etiquetas de natureza da informação (use sempre que apresentar um dado):
+      <span class="tag tag--guia">Confirmado no guia</span>
+      <span class="tag tag--brs">Informado pela BRS</span>
+      <span class="tag tag--calc">Cálculo teórico</span>
+      <span class="tag tag--hip">Hipótese</span>
+      <span class="tag tag--pend">Pendente</span>
+      <span class="tag tag--dev">Em desenvolvimento</span>
+  - Regra: não inserir resultados, gráficos, medições ou fotos que não existam.
+    Simulação é simulação; estimativa é estimativa (ver guia, p. 2 e p. 6).
+
+  ATALHOS: ←/→, PageUp/PageDown, Espaço (Shift+Espaço volta), Home/End, M (menu), F (tela cheia), Esc (fecha o menu).
+  DEEP LINK: apresentacao.html#3 abre o slide 3.
+-->
+<style>
+  :root {
+    --bg: #0b1220;
+    --surface: #111a2e;
+    --surface-2: #16223b;
+    --line: #23324f;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #22d3ee;
+    --tag-guia: #22d3ee;
+    --tag-brs: #60a5fa;
+    --tag-calc: #a5b4fc;
+    --tag-hip: #fbbf24;
+    --tag-pend: #fb923c;
+    --tag-dev: #94a3b8;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    --chrome-h: 52px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.45;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  a:hover { color: var(--accent-2); }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+
+  /* ---------- Barra superior ---------- */
+  .topbar {
+    flex: 0 0 var(--chrome-h);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(11, 18, 32, .92);
+    transition: opacity .25s;
+    z-index: 5;
+  }
+  .back { font-size: 14px; text-decoration: none; white-space: nowrap; }
+  .topbar-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .icon-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .icon-btn:disabled { opacity: .4; cursor: default; }
+  .icon-btn svg { width: 16px; height: 16px; }
+  .kbd { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+  /* ---------- Progresso ---------- */
+  .progress { flex: 0 0 3px; background: var(--surface); }
+  .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .2s; }
+
+  /* ---------- Área de slides (padrão = celular: empilhado e rolável) ---------- */
+  .viewport {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .stage { position: relative; width: 100%; font-size: 16px; padding: 20px 16px 16px; }
+  .slide { display: none; }
+  .slide.active { display: block; }
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ---------- Controles inferiores ---------- */
+  .controls {
+    flex: 0 0 var(--chrome-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    border-top: 1px solid var(--line);
+    background: rgba(11, 18, 32, .92);
+    transition: opacity .25s;
+    z-index: 5;
+  }
+  .counter { min-width: 64px; text-align: center; font-variant-numeric: tabular-nums; font-size: 14px; color: var(--muted); }
+
+  /* Em tela cheia, a interface some após alguns segundos sem movimento */
+  body.is-fs.idle .topbar, body.is-fs.idle .controls { opacity: 0; pointer-events: none; }
+  body.is-fs.idle { cursor: none; }
+
+  /* ---------- Menu de seções ---------- */
+  .backdrop { position: fixed; inset: 0; background: rgba(2, 6, 15, .55); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 9; }
+  .backdrop.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: min(340px, 88vw);
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    transform: translateX(-102%);
+    transition: transform .2s;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+  }
+  .drawer.open { transform: none; }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .drawer-head h2 { margin: 0; font-size: 15px; }
+  .drawer ol { list-style: none; margin: 0; padding: 8px; overflow-y: auto; flex: 1; }
+  .drawer li button {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    text-align: left;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .drawer li button:hover { background: var(--surface-2); }
+  .drawer li button[aria-current="true"] { background: var(--surface-2); color: var(--accent-2); }
+  .drawer li .n { font-family: var(--mono); font-size: 12px; color: var(--muted); min-width: 22px; }
+  .drawer-legend { border-top: 1px solid var(--line); padding: 12px 16px 16px; font-size: 12px; color: var(--muted); }
+  .drawer-legend p { margin: 0 0 8px; }
+  .drawer-legend .tags { display: flex; flex-wrap: wrap; gap: 6px; font-size: 18px; }
+
+  /* ---------- Tipografia dos slides ---------- */
+  .eyebrow { margin: 0 0 .4em; font-size: .78em; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); }
+  .slide h1 { margin: 0 0 .3em; font-size: 2.1em; line-height: 1.1; letter-spacing: -.01em; }
+  .slide h2 { margin: 0 0 .55em; font-size: 1.55em; line-height: 1.15; letter-spacing: -.01em; }
+  .slide h3 { margin: 0 0 .45em; font-size: 1em; color: var(--accent); }
+  .slide p { margin: 0 0 .6em; }
+  .slide ul, .slide ol.list { margin: 0 0 .6em; padding-left: 1.15em; }
+  .slide li { margin: 0 0 .35em; }
+  .lead { font-size: 1.12em; color: var(--muted); max-width: 46em; }
+  .muted { color: var(--muted); }
+  .small { font-size: .78em; }
+  .source { font-size: .7em; color: var(--muted); margin-top: .8em; }
+  .title-row { display: flex; flex-wrap: wrap; align-items: center; gap: .3em .6em; margin-bottom: .55em; }
+  .title-row h2 { margin: 0; }
+
+  /* ---------- Etiquetas ---------- */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .4em;
+    font-size: .62em;
+    font-weight: 600;
+    letter-spacing: .02em;
+    line-height: 1.5;
+    padding: .1em .65em;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .tag::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: currentColor; }
+  .tag--guia { color: var(--tag-guia); }
+  .tag--brs { color: var(--tag-brs); }
+  .tag--calc { color: var(--tag-calc); }
+  .tag--hip { color: var(--tag-hip); }
+  .tag--pend { color: var(--tag-pend); }
+  .tag--dev { color: var(--tag-dev); }
+
+  /* ---------- Componentes ---------- */
+  .grid { display: grid; gap: 1em; grid-template-columns: 1fr; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .85em 1em; }
+  .card > :last-child { margin-bottom: 0; }
+  .card ul { font-size: .9em; }
+  .card .card-head { display: flex; justify-content: space-between; align-items: center; gap: .5em; margin-bottom: .45em; }
+  .card .card-head h3 { margin: 0; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .7em .9em; }
+  .stat .value { display: block; font-size: 1.7em; font-weight: 700; color: var(--accent-2); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat .label { display: block; font-size: .78em; color: var(--muted); }
+  blockquote { margin: 0 0 .9em; padding: .6em 1em; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 10px 10px 0; font-size: 1.02em; }
+  blockquote cite { display: block; margin-top: .3em; font-style: normal; font-size: .72em; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: .82em; }
+  th, td { text-align: left; padding: .42em .6em; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { color: var(--muted); font-weight: 600; font-size: .9em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+  .formula { font-family: var(--mono); font-size: .82em; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: .5em; }
+  .chip { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: .45em .8em; font-size: .9em; }
+  .note { border: 1px dashed var(--line); border-radius: 10px; padding: .6em .9em; font-size: .82em; color: var(--muted); }
+
+  /* Capa */
+  .cover-grid { display: grid; gap: .8em; grid-template-columns: 1fr; margin-top: 1.6em; }
+  .cover-grid div { border-top: 1px solid var(--line); padding-top: .6em; }
+  .cover-grid .label { display: block; font-size: .72em; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: .2em; }
+
+  /* Linha do tempo */
+  .timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+  .timeline li { position: relative; padding: 0 0 .85em 1.1em; margin: 0; }
+  .timeline li::before { content: ""; position: absolute; left: -7px; top: .45em; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); }
+  .timeline li.key::before { background: var(--accent-2); border-color: var(--accent-2); }
+  .timeline .date { display: block; font-weight: 700; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+  .timeline .what { display: block; font-size: .92em; }
+
+  /* Diagrama */
+  .diagram { width: 100%; height: auto; display: block; }
+  .diagram--h { display: none; }
+  .diagram .blk { fill: var(--surface); stroke: #334155; stroke-width: 2; }
+  .diagram .blk--key { stroke: var(--accent-2); stroke-width: 2.5; }
+  .diagram .blk--ext { fill: var(--surface-2); }
+  .diagram .bottle { fill: rgba(56, 189, 248, .05); stroke: var(--accent); stroke-width: 2; stroke-dasharray: 9 7; }
+  .diagram .bottle-label { fill: var(--accent); font-size: 15px; font-weight: 700; letter-spacing: .04em; }
+  .diagram .t-title { fill: var(--text); font-size: 19px; font-weight: 700; font-family: var(--font); }
+  .diagram .t-sub { fill: var(--muted); font-size: 15px; font-family: var(--font); }
+  .diagram .t-legend { fill: var(--muted); font-size: 15px; font-family: var(--font); }
+  .diagram .arrow { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+  .diagram .arrowhead { fill: var(--accent); }
+
+  /* ---------- Desktop: palco 16:9 escalável ---------- */
+  @media (min-width: 900px) and (min-height: 500px) {
+    .viewport { overflow: hidden; }
+    .stage {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1280px;
+      height: 720px;
+      padding: 0;
+      font-size: 22px;
+      transform-origin: center center;
+      transform: translate(-50%, -50%);
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .slide {
+      display: block;
+      position: absolute;
+      inset: 0;
+      padding: 52px 72px 70px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .22s ease, visibility 0s linear .22s;
+    }
+    .slide.active { opacity: 1; visibility: visible; transition: opacity .22s ease, visibility 0s; }
+    .slide-footer {
+      position: absolute;
+      left: 72px; right: 72px; bottom: 22px;
+      margin: 0;
+      font-size: 13px;
+      z-index: 2;
+    }
+    .slide h1 { font-size: 2.6em; }
+    .cols-2 { grid-template-columns: 1fr 1fr; }
+    .cols-2-wide { grid-template-columns: 1.15fr .85fr; }
+    .cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .stats-3 { grid-template-columns: repeat(3, 1fr); }
+    .cover-grid { grid-template-columns: repeat(3, 1fr); gap: 1.6em; }
+    .slide.slide-cover { display: flex; flex-direction: column; justify-content: center; }
+    .diagram--h { display: block; }
+    .diagram--v { display: none; }
+  }
+
+  /* Telas estreitas: botões só com ícone na barra superior */
+  @media (max-width: 640px) {
+    .topbar { gap: 8px; padding: 0 12px; }
+    .topbar-title { visibility: hidden; }
+    .topbar .icon-btn .lbl, .topbar .kbd { display: none; }
+    .topbar .icon-btn { padding: 0 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+
+  @media print {
+    body { display: block; overflow: visible; background: #fff; }
+    .topbar, .controls, .progress, .drawer, .backdrop { display: none !important; }
+    .viewport { overflow: visible; }
+    .stage { position: static !important; transform: none !important; width: auto !important; height: auto !important; border: 0; }
+    .slide { display: block !important; position: relative !important; opacity: 1 !important; visibility: visible !important; page-break-after: always; padding: 24px !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html#/">← Voltar à aplicação</a>
+  <div class="topbar-title">HackIES 2026 · D02 — Alimentação elétrica de ROVs</div>
+  <button class="icon-btn" id="btn-menu" type="button" aria-controls="menu" aria-expanded="false" aria-label="Menu de seções" title="Menu de seções (M)">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <span class="lbl">Seções</span> <span class="kbd">M</span>
+  </button>
+  <button class="icon-btn" id="btn-fs" type="button" aria-label="Tela cheia" title="Tela cheia (F)">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+    <span class="lbl">Tela cheia</span> <span class="kbd">F</span>
+  </button>
+</header>
+
+<div class="progress" role="progressbar" aria-label="Progresso da apresentação" aria-valuemin="1" aria-valuemax="13" aria-valuenow="1" id="progress">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<main class="viewport" id="viewport">
+  <div class="stage" id="stage" aria-roledescription="apresentação">
+
+    <!-- ============================================================
+         SLIDE 1 — CAPA
+         ============================================================ -->
+    <section class="slide slide-cover" data-title="Capa">
+      <p class="eyebrow">HackIES 2026 · Desafio D02</p>
+      <h1>Alimentação elétrica de ROVs</h1>
+      <p class="lead">Arquitetura de conversão CC-CC para entrada de referência de 600 V, saída de 15 V e potência de referência de 1.500 W.</p>
+      <div class="cover-grid">
+        <div><span class="label">Equipe</span>Willyans Chen · Cauã Peixoto · Spencer S. Garcia</div>
+        <div><span class="label">Realização</span>IEEE IES Student Branch Chapter — IFF Campus Macaé</div>
+        <div><span class="label">Desafio proposto por</span>BRS Robótica Submarina Ltda.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 2 — CONTEXTO (guia, p. 4 e p. 6)
+         ============================================================ -->
+    <section class="slide" data-title="Contexto do desafio">
+      <p class="eyebrow">Contexto</p>
+      <h2>O sistema de alimentação apresentado pela BRS</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="card-head"><h3>O que foi informado</h3><span class="tag tag--brs">Informado pela BRS</span></div>
+          <ul>
+            <li>O sistema recebe aproximadamente <strong>600 V em corrente contínua</strong>.</li>
+            <li>Realiza a conversão para cerca de <strong>15 V</strong>.</li>
+            <li>Potência de referência de <strong>1.500 W</strong>.</li>
+            <li>O conjunto fica em um invólucro que a empresa chama de <strong>“garrafa de alimentação”</strong>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Problema central e recorte</h3><span class="tag tag--guia">Confirmado no guia</span></div>
+          <ul>
+            <li>Conceber uma arquitetura de alimentação adequada ao ROV e às cargas atendidas.</li>
+            <li>O recorte prioriza a análise do sistema existente e uma proposta de conversão de energia, <strong>em nível conceitual</strong>.</li>
+            <li>A entrega pode ser conceitual ou simulada; não se exige fabricar ou energizar um conversor de 600 V e 1.500 W.</li>
+            <li>A BRS indicou a possibilidade de demonstrar um conjunto desmontado — a confirmar pela organização.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="source">Fonte: Guia “Desafios e Premiações” v1.1, p. 4 e p. 6.</p>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 3 — REQUISITOS CONHECIDOS × PENDENTES (guia, p. 4)
+         ============================================================ -->
+    <section class="slide" data-title="Requisitos conhecidos e pendentes">
+      <p class="eyebrow">Requisitos</p>
+      <h2>O que sabemos e o que ainda falta definir</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Parâmetro</th><th>Valor de referência</th><th>Origem</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Tensão de entrada</td><td>≈ 600 V CC</td><td><span class="tag tag--brs">Informado pela BRS</span></td></tr>
+            <tr><td>Tensão de saída</td><td>≈ 15 V CC, exclusivamente</td><td><span class="tag tag--guia">Confirmado no guia</span></td></tr>
+            <tr><td>Potência</td><td>1.500 W (referência)</td><td><span class="tag tag--guia">Confirmado no guia</span></td></tr>
+            <tr><td>Corrente de saída</td><td>100 A (1.500 W ÷ 15 V)</td><td><span class="tag tag--calc">Cálculo teórico</span></td></tr>
+            <tr><td>Acondicionamento</td><td>“Garrafa de alimentação”</td><td><span class="tag tag--brs">Informado pela BRS</span></td></tr>
+            <tr><td>Múltiplas tensões simultâneas</td><td>Não exigidas neste recorte</td><td><span class="tag tag--guia">Confirmado no guia</span></td></tr>
+            <tr><td>Faixa de tensão de entrada</td><td>Não detalhada</td><td><span class="tag tag--pend">Pendente</span></td></tr>
+            <tr><td>Regime de carga</td><td>Não detalhado</td><td><span class="tag tag--pend">Pendente</span></td></tr>
+            <tr><td>Dimensões</td><td>Não detalhadas</td><td><span class="tag tag--pend">Pendente</span></td></tr>
+            <tr><td>Interfaces</td><td>Não detalhadas</td><td><span class="tag tag--pend">Pendente</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="source">Itens pendentes deverão ser tratados como hipóteses de projeto, sem pressupor especificações confirmadas (guia, p. 4 e p. 6).</p>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 4 — O PROBLEMA DE ENGENHARIA
+         Números = cálculo teórico; rendimentos = hipóteses sem validação.
+         ============================================================ -->
+    <section class="slide" data-title="O problema de engenharia">
+      <p class="eyebrow">Problema de engenharia</p>
+      <h2>Converter 600 V em 15 V com 1.500 W</h2>
+      <div class="grid cols-2">
+        <div>
+          <blockquote class="small">
+            Como converter a entrada de referência de 600 V CC em 15 V CC, com 1.500 W, de forma fundamentada, integrada ao ROV e viável?
+            <cite>Pergunta orientadora do D02 (guia, p. 4), resumida.</cite>
+          </blockquote>
+          <div class="title-row"><span class="tag tag--calc">Cálculo teórico</span></div>
+          <div class="grid stats-3">
+            <div class="stat"><span class="value">100 A</span><span class="label">corrente de saída<br>1.500 W ÷ 15 V</span></div>
+            <div class="stat"><span class="value">40 : 1</span><span class="label">razão de tensões<br>600 V ÷ 15 V</span></div>
+            <div class="stat"><span class="value">2,5 A</span><span class="label">entrada ideal (η = 100%)<br>1.500 W ÷ 600 V</span></div>
+          </div>
+          <h3 style="margin-top:.8em">Pontos a investigar <span class="tag tag--pend">Pendente</span></h3>
+          <ul class="small">
+            <li>Que isolamento é necessário entre o lado de 600 V e a saída de 15 V?</li>
+            <li>Como limitar as perdas de condução com 100 A no lado de baixa tensão?</li>
+            <li>Como retirar o calor das perdas de dentro de um invólucro selado?</li>
+          </ul>
+        </div>
+        <div class="card" style="align-self:start">
+          <h3>Perdas a dissipar</h3>
+          <p style="margin:0 0 .5em"><span class="tag tag--hip">Hipótese de rendimento, sem validação</span></p>
+          <table>
+            <thead><tr><th>η (hipótese)</th><th class="num">Potência de entrada</th><th class="num">Perdas</th></tr></thead>
+            <tbody>
+              <tr><td>90%</td><td class="num">1.666,7 W</td><td class="num">166,7 W</td></tr>
+              <tr><td>93%</td><td class="num">1.612,9 W</td><td class="num">112,9 W</td></tr>
+              <tr><td>95%</td><td class="num">1.578,9 W</td><td class="num">78,9 W</td></tr>
+              <tr><td>97%</td><td class="num">1.546,4 W</td><td class="num">46,4 W</td></tr>
+            </tbody>
+          </table>
+          <p class="formula" style="margin:.6em 0 .3em">P<sub>perdas</sub> = P<sub>out</sub> · (1/η − 1), com P<sub>out</sub> = 1.500 W</p>
+          <p class="small muted" style="margin:0">Valores ilustrativos: o rendimento real depende da topologia e dos componentes, ainda não definidos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 5 — PESQUISA E FUNDAMENTAÇÃO
+         Atualizar o estado de cada área conforme a base de conhecimento (Obsidian).
+         ============================================================ -->
+    <section class="slide" data-title="Pesquisa e fundamentação">
+      <p class="eyebrow">Pesquisa e fundamentação</p>
+      <h2>Quatro áreas de conhecimento</h2>
+      <div class="grid cols-4">
+        <div class="card">
+          <div class="card-head"><h3>Eletrônica de Potência</h3></div>
+          <ul><li>Conversores CC-CC e topologias</li><li>Semicondutores e magnéticos</li><li>Perdas, controle e proteção</li></ul>
+          <span class="tag tag--pend">Não pesquisado / em início</span>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Sistemas de Alimentação para ROV</h3></div>
+          <ul><li>Arquitetura e umbilical</li><li>Distribuição e integração com cargas</li><li>Condições submarinas</li></ul>
+          <span class="tag tag--pend">Não pesquisado / em início</span>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Engenharia Térmica e Segurança</h3></div>
+          <ul><li>Dissipação térmica</li><li>Isolamento galvânico</li><li>Falhas, confiabilidade e normas</li></ul>
+          <span class="tag tag--pend">Não pesquisado / em início</span>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Análise de Viabilidade</h3></div>
+          <ul><li>Comparação de arquiteturas</li><li>Custos, dimensões e peso</li><li>Componentes e manutenção</li></ul>
+          <span class="tag tag--pend">Não pesquisado / em início</span>
+        </div>
+      </div>
+      <p class="note" style="margin-top:1em">Estado em 11/11/2026. Fontes, sínteses e matriz de evidências ficam na base de conhecimento do projeto (Obsidian). Nenhuma fonte técnica foi incorporada até esta data.</p>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 6 — COMPARAÇÃO DE ARQUITETURAS (em desenvolvimento)
+         ============================================================ -->
+    <section class="slide" data-title="Comparação de arquiteturas">
+      <p class="eyebrow">Comparação de arquiteturas</p>
+      <div class="title-row"><h2>Como as alternativas serão comparadas</h2><span class="tag tag--dev">Em desenvolvimento</span></div>
+      <p class="lead">As arquiteturas candidatas serão definidas a partir da pesquisa. A comparação usará os indicadores sugeridos pela BRS, sempre com as condições de análise declaradas.</p>
+      <div class="chips" style="margin:1em 0">
+        <span class="chip">Rendimento estimado</span>
+        <span class="chip">Perdas</span>
+        <span class="chip">Regulação da saída</span>
+        <span class="chip">Capacidade de atender à carga</span>
+        <span class="chip">Dimensões</span>
+        <span class="chip">Manutenção</span>
+        <span class="chip">Custo</span>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Também serão avaliados</h3>
+          <p class="small">Aspectos de isolamento, proteção e dissipação térmica pertinentes a cada conceito, e como seriam verificados (resultado esperado, guia p. 4).</p>
+        </div>
+        <div class="card">
+          <h3>Alternativas candidatas</h3>
+          <p class="small muted">A definir após a pesquisa bibliográfica. Nenhuma topologia foi escolhida.</p>
+        </div>
+      </div>
+      <p class="source">Os indicadores são referências para análise e não constituem critérios de pontuação (guia, p. 4).</p>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 7 — DIAGRAMA DE BLOCOS CONCEITUAL
+         Dois SVGs editáveis: horizontal (desktop) e vertical (celular).
+         Ao definir a topologia, atualize o bloco "Conversão CC-CC" nos DOIS.
+         ============================================================ -->
+    <section class="slide" data-title="Diagrama de blocos">
+      <p class="eyebrow">Arquitetura conceitual</p>
+      <div class="title-row"><h2>Diagrama de blocos</h2><span class="tag tag--dev">Em desenvolvimento</span></div>
+
+      <!-- Versão horizontal (desktop) -->
+      <svg class="diagram diagram--h" viewBox="0 0 1200 400" role="img" aria-labelledby="dgh-title dgh-desc">
+        <title id="dgh-title">Diagrama de blocos genérico do sistema de alimentação</title>
+        <desc id="dgh-desc">Entrada de aproximadamente 600 V CC, proteção e filtro de entrada, conversão CC-CC com topologia a definir, saída de 15 V CC até 100 A e distribuição às cargas do ROV. Os três blocos centrais ficam dentro da garrafa de alimentação.</desc>
+        <defs>
+          <marker id="ah-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path class="arrowhead" d="M0,0 L10,5 L0,10 z"/>
+          </marker>
+        </defs>
+        <!-- Garrafa de alimentação (fronteira ilustrativa) -->
+        <rect class="bottle" x="236" y="70" width="718" height="250" rx="18"/>
+        <text class="bottle-label" x="256" y="100">GARRAFA DE ALIMENTAÇÃO</text>
+        <!-- Blocos -->
+        <rect class="blk blk--ext" x="16" y="140" width="190" height="120" rx="10"/>
+        <text class="t-title" x="111" y="188" text-anchor="middle">Entrada</text>
+        <text class="t-sub" x="111" y="214" text-anchor="middle">≈ 600 V CC</text>
+        <text class="t-sub" x="111" y="236" text-anchor="middle">umbilical (hipótese)</text>
+
+        <rect class="blk" x="266" y="140" width="200" height="120" rx="10"/>
+        <text class="t-title" x="366" y="188" text-anchor="middle">Proteção</text>
+        <text class="t-sub" x="366" y="214" text-anchor="middle">e filtro de entrada</text>
+
+        <rect class="blk blk--key" x="496" y="140" width="210" height="120" rx="10"/>
+        <text class="t-title" x="601" y="188" text-anchor="middle">Conversão CC-CC</text>
+        <text class="t-sub" x="601" y="214" text-anchor="middle">topologia a definir</text>
+
+        <rect class="blk" x="736" y="140" width="190" height="120" rx="10"/>
+        <text class="t-title" x="831" y="188" text-anchor="middle">Saída</text>
+        <text class="t-sub" x="831" y="214" text-anchor="middle">15 V CC</text>
+        <text class="t-sub" x="831" y="236" text-anchor="middle">até 100 A</text>
+
+        <rect class="blk blk--ext" x="990" y="140" width="194" height="120" rx="10"/>
+        <text class="t-title" x="1087" y="188" text-anchor="middle">Distribuição</text>
+        <text class="t-sub" x="1087" y="214" text-anchor="middle">às cargas do ROV</text>
+        <!-- Setas -->
+        <line class="arrow" x1="206" y1="200" x2="264" y2="200" marker-end="url(#ah-h)"/>
+        <line class="arrow" x1="466" y1="200" x2="494" y2="200" marker-end="url(#ah-h)"/>
+        <line class="arrow" x1="706" y1="200" x2="734" y2="200" marker-end="url(#ah-h)"/>
+        <line class="arrow" x1="926" y1="200" x2="988" y2="200" marker-end="url(#ah-h)"/>
+        <!-- Legenda -->
+        <text class="t-legend" x="600" y="368" text-anchor="middle">Diagrama genérico — topologia ainda não definida. A fronteira da garrafa é ilustrativa.</text>
+      </svg>
+
+      <!-- Versão vertical (celular) -->
+      <svg class="diagram diagram--v" viewBox="0 0 360 660" role="img" aria-labelledby="dgv-title dgv-desc">
+        <title id="dgv-title">Diagrama de blocos genérico do sistema de alimentação</title>
+        <desc id="dgv-desc">Entrada de aproximadamente 600 V CC, proteção e filtro de entrada, conversão CC-CC com topologia a definir, saída de 15 V CC até 100 A e distribuição às cargas do ROV. Os três blocos centrais ficam dentro da garrafa de alimentação.</desc>
+        <defs>
+          <marker id="ah-v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path class="arrowhead" d="M0,0 L10,5 L0,10 z"/>
+          </marker>
+        </defs>
+        <rect class="bottle" x="20" y="118" width="320" height="346" rx="16"/>
+        <text class="bottle-label" transform="translate(34 291) rotate(-90)" text-anchor="middle" style="font-size:13px">GARRAFA DE ALIMENTAÇÃO</text>
+
+        <rect class="blk blk--ext" x="40" y="10" width="280" height="80" rx="10"/>
+        <text class="t-title" x="180" y="42" text-anchor="middle">Entrada · ≈ 600 V CC</text>
+        <text class="t-sub" x="180" y="68" text-anchor="middle">umbilical (hipótese)</text>
+
+        <rect class="blk" x="40" y="158" width="280" height="76" rx="10"/>
+        <text class="t-title" x="180" y="190" text-anchor="middle">Proteção</text>
+        <text class="t-sub" x="180" y="215" text-anchor="middle">e filtro de entrada</text>
+
+        <rect class="blk blk--key" x="40" y="266" width="280" height="76" rx="10"/>
+        <text class="t-title" x="180" y="298" text-anchor="middle">Conversão CC-CC</text>
+        <text class="t-sub" x="180" y="323" text-anchor="middle">topologia a definir</text>
+
+        <rect class="blk" x="40" y="374" width="280" height="76" rx="10"/>
+        <text class="t-title" x="180" y="406" text-anchor="middle">Saída · 15 V CC</text>
+        <text class="t-sub" x="180" y="431" text-anchor="middle">até 100 A</text>
+
+        <rect class="blk blk--ext" x="40" y="500" width="280" height="76" rx="10"/>
+        <text class="t-title" x="180" y="532" text-anchor="middle">Distribuição</text>
+        <text class="t-sub" x="180" y="557" text-anchor="middle">às cargas do ROV</text>
+
+        <line class="arrow" x1="180" y1="90" x2="180" y2="156" marker-end="url(#ah-v)"/>
+        <line class="arrow" x1="180" y1="234" x2="180" y2="264" marker-end="url(#ah-v)"/>
+        <line class="arrow" x1="180" y1="342" x2="180" y2="372" marker-end="url(#ah-v)"/>
+        <line class="arrow" x1="180" y1="450" x2="180" y2="498" marker-end="url(#ah-v)"/>
+
+        <text class="t-legend" x="180" y="612" text-anchor="middle">Diagrama genérico — topologia</text>
+        <text class="t-legend" x="180" y="634" text-anchor="middle">ainda não definida. Fronteira ilustrativa.</text>
+      </svg>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 8 — EFICIÊNCIA E LIMITAÇÕES
+         Não inserir valores de rendimento aqui antes de existirem cálculos/simulações registrados.
+         ============================================================ -->
+    <section class="slide" data-title="Eficiência e limitações">
+      <p class="eyebrow">Eficiência e limitações</p>
+      <div class="title-row"><h2>O que será estimado e como</h2><span class="tag tag--dev">Em desenvolvimento</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>O que será estimado</h3>
+          <ul>
+            <li>Rendimento na condição de referência (600 V, 1.500 W)</li>
+            <li>Distribuição das perdas por componente</li>
+            <li>Regulação da saída de 15 V</li>
+            <li>Comportamento em outros pontos de carga, conforme as hipóteses de regime</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Como</h3>
+          <ul>
+            <li>Cálculo analítico com dados de fabricantes</li>
+            <li>Simulação de circuito (ferramenta a definir)</li>
+            <li>Condições de análise declaradas em cada resultado</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Limitações</h3><span class="tag tag--pend">Pendente</span></div>
+          <ul>
+            <li>Sem protótipo físico: resultados serão estimativas ou simulações, não medições</li>
+            <li>Faixa de entrada e regime de carga ainda são hipóteses</li>
+            <li>Modelos de perdas dependem de componentes ainda não selecionados</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 9 — SEGURANÇA E CONFIABILIDADE (guia, p. 4)
+         ============================================================ -->
+    <section class="slide" data-title="Segurança e confiabilidade">
+      <p class="eyebrow">Segurança e confiabilidade</p>
+      <div class="title-row"><h2>Itens a verificar</h2><span class="tag tag--pend">Pendente</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Isolamento</h3>
+          <ul>
+            <li>Necessidade de isolamento galvânico entre a entrada de 600 V e a saída de 15 V</li>
+            <li>Requisitos e normas aplicáveis — a pesquisar</li>
+          </ul>
+          <p class="small muted">Verificação: revisão de normas e literatura; análise do conceito.</p>
+        </div>
+        <div class="card">
+          <h3>Proteção</h3>
+          <ul>
+            <li>Sobrecorrente e curto-circuito na saída</li>
+            <li>Sobretensão e subtensão na entrada</li>
+            <li>Comportamento em falha e desligamento seguro</li>
+          </ul>
+          <p class="small muted">Verificação: análise de modos de falha; simulação dos cenários.</p>
+        </div>
+        <div class="card">
+          <h3>Dissipação térmica</h3>
+          <ul>
+            <li>Caminho do calor das perdas até o meio externo, através da garrafa</li>
+            <li>Temperatura de operação dos componentes</li>
+          </ul>
+          <p class="small muted">Verificação: balanço térmico por cálculo; simulação térmica, se viável.</p>
+        </div>
+      </div>
+      <p class="source">O guia pede identificar os aspectos de isolamento, proteção e dissipação térmica pertinentes ao conceito e como seriam verificados (p. 4).</p>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 10 — VIABILIDADE
+         ============================================================ -->
+    <section class="slide" data-title="Viabilidade">
+      <p class="eyebrow">Viabilidade</p>
+      <div class="title-row"><h2>Análise preliminar de viabilidade</h2><span class="tag tag--dev">Em desenvolvimento</span></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Custos</h3>
+          <p class="small">Custo estimado da solução a partir de cotações de componentes — a levantar.</p>
+        </div>
+        <div class="card">
+          <h3>Dimensões</h3>
+          <p class="small">Compatibilidade com a garrafa de alimentação. Dimensões ainda não detalhadas pela BRS. <span class="tag tag--pend">Pendente</span></p>
+        </div>
+        <div class="card">
+          <h3>Manutenção</h3>
+          <p class="small">Acesso, substituição de partes e diagnóstico de falhas — a avaliar.</p>
+        </div>
+        <div class="card">
+          <h3>Componentes</h3>
+          <p class="small">Disponibilidade no mercado e prazos de aquisição — a avaliar.</p>
+        </div>
+      </div>
+      <p class="note" style="margin-top:1em">Os gastos da equipe com o desenvolvimento do projeto são acompanhados na aba <strong>Gastos do Projeto</strong> da aplicação. Eles não se confundem com o custo estimado da solução proposta.</p>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 11 — ETAPAS E CRONOGRAMA (guia, p. 2 e p. 5)
+         ============================================================ -->
+    <section class="slide" data-title="Etapas e cronograma">
+      <p class="eyebrow">Etapas e cronograma</p>
+      <div class="title-row"><h2>Cronograma da competição</h2><span class="tag tag--guia">Confirmado no guia</span></div>
+      <div class="grid cols-2-wide">
+        <ol class="timeline">
+          <li><span class="date">09–13/11/2026</span><span class="what">Etapa 1 on-line.</span></li>
+          <li><span class="date">11/11/2026</span><span class="what">Visita técnica à BRS, das 8h às 12h, somente o líder de cada equipe.</span></li>
+          <li class="key"><span class="date">até 14/11/2026</span><span class="what">Entregas: Documento de Ideação e Vídeo Explicativo da Solução e/ou Protótipo (arts. 26 a 29 do edital). Horário, formatos e links no grupo oficial.</span></li>
+          <li class="key"><span class="date">03/12/2026</span><span class="what">Etapa 2 presencial no IFF Campus Macaé, para as 10 equipes classificadas: pitch de até 5 minutos, seguido de perguntas da banca.</span></li>
+        </ol>
+        <div class="grid">
+          <div class="stat"><span class="value">40%</span><span class="label">Etapa 1 na nota final</span></div>
+          <div class="stat"><span class="value">60%</span><span class="label">Etapa 2 na nota final</span></div>
+          <p class="small muted">O protótipo físico ou funcional não é obrigatório para obter a pontuação máxima na Etapa 1.</p>
+        </div>
+      </div>
+      <p class="source">Fonte: guia, p. 2 e p. 5. Critérios, pesos e desempates seguem o edital vigente.</p>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 12 — ESTADO ATUAL E PRÓXIMOS PASSOS
+         Atualizar a cada avanço real do projeto.
+         ============================================================ -->
+    <section class="slide" data-title="Estado atual e próximos passos">
+      <p class="eyebrow">Estado atual</p>
+      <h2>Onde estamos e próximos passos</h2>
+      <div class="grid cols-3">
+        <div class="card">
+          <div class="card-head"><h3>Concluído</h3></div>
+          <ul>
+            <li>Ambiente de trabalho estruturado: base de conhecimento (Obsidian) e aplicação de gestão da equipe</li>
+            <li>Leitura do guia oficial e levantamento de requisitos confirmados e pendentes</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Em andamento</h3><span class="tag tag--dev">Em desenvolvimento</span></div>
+          <ul>
+            <li>Início da pesquisa bibliográfica nas quatro áreas</li>
+            <li>Obtenção e conferência do edital principal (arts. 26 a 29)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Próximos passos</h3></div>
+          <ul class="small">
+            <li>Registrar as informações da visita técnica à BRS, se obtidas</li>
+            <li>Definir hipóteses de projeto para os dados pendentes</li>
+            <li>Levantar e comparar arquiteturas candidatas</li>
+            <li>Elaborar o Documento de Ideação e o Vídeo Explicativo (até 14/11)</li>
+            <li>Preparar o pitch de até 5 minutos (03/12), se classificados</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 13 — REFERÊNCIAS
+         Acrescentar apenas fontes verificadas, com link para a publicação original (DOI, editora, norma).
+         ============================================================ -->
+    <section class="slide" data-title="Referências">
+      <p class="eyebrow">Referências</p>
+      <h2>Referências</h2>
+      <ol class="list">
+        <li>
+          IEEE IES STUDENT BRANCH CHAPTER — IFF CAMPUS MACAÉ. <strong>Desafios e Premiações: guia das equipes · HackIES 2026.</strong> Versão 1.1. Macaé: Instituto Federal Fluminense, 1 nov. 2026.
+          <a href="../HACKIES%202026/Anexos/Desafios%20e%20Premia%C3%A7%C3%B5es%20-%20HackIES%202026%20(v1.1).pdf" target="_blank" rel="noopener">Abrir PDF</a>
+          <span class="small muted">(arquivo local do vault)</span>
+        </li>
+        <li>
+          <strong>Edital HACKIES 2026</strong> — documento principal da competição; prevalece sobre o guia. <span class="small muted">Não incluído no repositório.</span> <span class="tag tag--pend">Pendente</span>
+        </li>
+      </ol>
+      <p class="note" style="margin-top:1.2em">Fontes técnicas (artigos, normas, documentação de fabricantes) serão adicionadas à medida que forem verificadas e registradas na matriz de evidências da base de conhecimento.</p>
+    </section>
+
+    <!-- Rodapé comum a todos os slides -->
+    <footer class="slide-footer" aria-hidden="true">
+      <span>HackIES 2026 · D02</span>
+      <span>Material de apoio — não substitui os entregáveis oficiais</span>
+      <span id="footer-count">1 / 13</span>
+    </footer>
+  </div>
+</main>
+
+<nav class="controls" aria-label="Navegação dos slides">
+  <button class="icon-btn" id="btn-prev" type="button" title="Anterior (←)" aria-label="Slide anterior">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Anterior</span>
+  </button>
+  <span class="counter" id="counter" aria-live="polite">1 / 13</span>
+  <button class="icon-btn" id="btn-next" type="button" title="Próximo (→)" aria-label="Próximo slide">
+    <span>Próximo</span>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</nav>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="menu" aria-label="Seções da apresentação" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Seções</h2>
+    <button class="icon-btn" id="btn-close-menu" type="button" aria-label="Fechar menu">Fechar <span class="kbd">Esc</span></button>
+  </div>
+  <ol id="menu-list"></ol>
+  <div class="drawer-legend">
+    <p>Natureza da informação</p>
+    <div class="tags">
+      <span class="tag tag--guia">Confirmado no guia</span>
+      <span class="tag tag--brs">Informado pela BRS</span>
+      <span class="tag tag--calc">Cálculo teórico</span>
+      <span class="tag tag--hip">Hipótese</span>
+      <span class="tag tag--pend">Pendente</span>
+      <span class="tag tag--dev">Em desenvolvimento</span>
+    </div>
+  </div>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('#stage > .slide'));
+  var total = slides.length;
+  var current = -1;
+
+  var stage = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var counter = document.getElementById('counter');
+  var footerCount = document.getElementById('footer-count');
+  var progress = document.getElementById('progress');
+  var bar = document.getElementById('progress-bar');
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+  var btnMenu = document.getElementById('btn-menu');
+  var btnCloseMenu = document.getElementById('btn-close-menu');
+  var btnFs = document.getElementById('btn-fs');
+  var drawer = document.getElementById('menu');
+  var backdrop = document.getElementById('backdrop');
+  var menuList = document.getElementById('menu-list');
+
+  var desktopMQ = window.matchMedia('(min-width: 900px) and (min-height: 500px)');
+  var STAGE_W = 1280, STAGE_H = 720, MARGIN = 24;
+
+  progress.setAttribute('aria-valuemax', String(total));
+
+  /* ---------- Menu de seções ---------- */
+  var menuButtons = slides.map(function (s, i) {
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button';
+    var n = document.createElement('span');
+    n.className = 'n';
+    n.textContent = String(i + 1);
+    var t = document.createElement('span');
+    t.textContent = s.getAttribute('data-title') || ('Slide ' + (i + 1));
+    b.appendChild(n);
+    b.appendChild(t);
+    b.addEventListener('click', function () { go(i); closeMenu(); });
+    li.appendChild(b);
+    menuList.appendChild(li);
+
+    s.setAttribute('aria-roledescription', 'slide');
+    s.setAttribute('aria-label', (i + 1) + ' de ' + total + ': ' + t.textContent);
+    return b;
+  });
+
+  var menuOpen = false;
+  function openMenu() {
+    menuOpen = true;
+    drawer.classList.add('open');
+    backdrop.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    drawer.inert = false;
+    btnMenu.setAttribute('aria-expanded', 'true');
+    var target = menuButtons[current] || menuButtons[0];
+    if (target) target.focus();
+  }
+  function closeMenu() {
+    if (!menuOpen) return;
+    menuOpen = false;
+    drawer.classList.remove('open');
+    backdrop.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.inert = true;
+    btnMenu.setAttribute('aria-expanded', 'false');
+    btnMenu.focus();
+  }
+  function toggleMenu() { menuOpen ? closeMenu() : openMenu(); }
+  drawer.inert = true;
+
+  /* ---------- Navegação ---------- */
+  function clamp(i) { return Math.max(0, Math.min(total - 1, i)); }
+
+  function parseHash() {
+    var m = /^#(\d+)$/.exec(window.location.hash);
+    if (!m) return null;
+    return clamp(parseInt(m[1], 10) - 1);
+  }
+
+  function go(i) {
+    i = clamp(i);
+    if (i === current) return;
+    if (current >= 0) {
+      slides[current].classList.remove('active');
+      slides[current].setAttribute('aria-hidden', 'true');
+      slides[current].inert = true;
+    }
+    current = i;
+    var s = slides[current];
+    s.classList.add('active');
+    s.removeAttribute('aria-hidden');
+    s.inert = false;
+    update();
+  }
+
+  function update() {
+    var label = (current + 1) + ' / ' + total;
+    counter.textContent = label;
+    footerCount.textContent = label;
+    bar.style.width = ((current + 1) / total * 100) + '%';
+    progress.setAttribute('aria-valuenow', String(current + 1));
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+    menuButtons.forEach(function (b, i) { b.setAttribute('aria-current', i === current ? 'true' : 'false'); });
+    var hash = '#' + (current + 1);
+    if (window.location.hash !== hash) {
+      try { history.replaceState(null, '', hash); } catch (e) { window.location.hash = hash; }
+    }
+    if (!desktopMQ.matches) viewport.scrollTop = 0;
+  }
+
+  function next() { go(current + 1); }
+  function prev() { go(current - 1); }
+
+  btnPrev.addEventListener('click', prev);
+  btnNext.addEventListener('click', next);
+  btnMenu.addEventListener('click', toggleMenu);
+  btnCloseMenu.addEventListener('click', closeMenu);
+  backdrop.addEventListener('click', closeMenu);
+
+  window.addEventListener('hashchange', function () {
+    var i = parseHash();
+    if (i !== null) go(i);
+  });
+
+  /* ---------- Teclado ---------- */
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    var k = e.key;
+
+    if (k === 'Escape') { if (menuOpen) { e.preventDefault(); closeMenu(); } return; }
+    if (k === 'm' || k === 'M') { e.preventDefault(); toggleMenu(); return; }
+    if (k === 'f' || k === 'F') { e.preventDefault(); toggleFullscreen(); return; }
+    if (menuOpen) return; // Tab/Enter navegam dentro do menu
+
+    // Espaço sobre um botão/link mantém a ativação nativa do elemento
+    if ((k === ' ' || k === 'Spacebar') && t && /^(BUTTON|A)$/.test(t.tagName)) return;
+
+    switch (k) {
+      case 'ArrowRight': case 'PageDown': next(); break;
+      case 'ArrowLeft': case 'PageUp': prev(); break;
+      case ' ': case 'Spacebar': if (e.shiftKey) prev(); else next(); break;
+      case 'Home': go(0); break;
+      case 'End': go(total - 1); break;
+      default: return;
+    }
+    e.preventDefault();
+  });
+
+  /* ---------- Toque (swipe horizontal) ---------- */
+  var touchX = null, touchY = null;
+  viewport.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) { touchX = null; return; }
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+  }, { passive: true });
+  viewport.addEventListener('touchend', function (e) {
+    if (touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    var dy = e.changedTouches[0].clientY - touchY;
+    touchX = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0) next(); else prev();
+    }
+  }, { passive: true });
+
+  /* ---------- Escala do palco 16:9 ---------- */
+  function fit() {
+    if (desktopMQ.matches) {
+      var w = viewport.clientWidth - MARGIN * 2;
+      var h = viewport.clientHeight - MARGIN * 2;
+      var s = Math.max(0.2, Math.min(w / STAGE_W, h / STAGE_H));
+      stage.style.transform = 'translate(-50%, -50%) scale(' + s.toFixed(4) + ')';
+    } else {
+      stage.style.transform = '';
+    }
+  }
+  if (typeof ResizeObserver === 'function') {
+    new ResizeObserver(fit).observe(viewport);
+  } else {
+    window.addEventListener('resize', fit);
+  }
+  if (desktopMQ.addEventListener) desktopMQ.addEventListener('change', fit);
+  else if (desktopMQ.addListener) desktopMQ.addListener(fit);
+
+  /* ---------- Tela cheia (falha silenciosa se indisponível) ---------- */
+  var root = document.documentElement;
+  var canFs = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+  if (!canFs) btnFs.hidden = true;
+
+  function fsElement() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+  function toggleFullscreen() {
+    if (!canFs) return;
+    try {
+      var p;
+      if (!fsElement()) {
+        p = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+      } else {
+        var exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) p = exit.call(document);
+      }
+      if (p && typeof p.catch === 'function') p.catch(function () {});
+    } catch (err) { /* silencioso */ }
+  }
+  btnFs.addEventListener('click', toggleFullscreen);
+
+  var idleTimer = null;
+  function wake() {
+    document.body.classList.remove('idle');
+    clearTimeout(idleTimer);
+    if (document.body.classList.contains('is-fs')) {
+      idleTimer = setTimeout(function () { document.body.classList.add('idle'); }, 2500);
+    }
+  }
+  function onFsChange() {
+    var on = !!fsElement();
+    document.body.classList.toggle('is-fs', on);
+    btnFs.querySelector('.lbl').textContent = on ? 'Sair da tela cheia' : 'Tela cheia';
+    btnFs.setAttribute('aria-label', on ? 'Sair da tela cheia' : 'Tela cheia');
+    wake();
+  }
+  document.addEventListener('fullscreenchange', onFsChange);
+  document.addEventListener('webkitfullscreenchange', onFsChange);
+  document.addEventListener('mousemove', wake, { passive: true });
+  document.addEventListener('keydown', wake);
+
+  /* ---------- Início ---------- */
+  slides.forEach(function (s) { s.setAttribute('aria-hidden', 'true'); s.inert = true; });
+  var start = parseHash();
+  go(start === null ? 0 : start);
+  fit();
+})();
+</script>
+</body>
+</html>

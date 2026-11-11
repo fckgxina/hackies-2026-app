@@ -1,0 +1,88 @@
+/* Visão geral (dashboard). */
+(function (HK) {
+  'use strict';
+  const U = HK.util;
+
+  const PRIO = { Urgente: 0, Alta: 1, 'Média': 2, Baixa: 3 };
+
+  HK.views.dashboard = {
+    async render(el, route, alive) {
+      const [tickets, itens, contribs, entregaveis, tarefas, documentos, hist] = await Promise.all([
+        HK.db.list('tickets'), HK.db.list('itens'), HK.db.list('contribuicoes'), HK.db.list('entregaveis', { order: 'prazo', asc: true }),
+        HK.db.list('tarefas'), HK.db.list('documentos'), HK.db.list('historico', { limit: 10 }),
+      ]);
+      if (!alive()) return;
+
+      const fin = HK.finance.resumo({ itens, contribs, integrantes: HK.integrantesRateio(), categorias: HK.state.categorias, orcamento: HK.state.config.orcamento_centavos });
+      const pend = tickets.filter((t) => ['Nova', 'Em análise', 'Em andamento'].includes(t.status));
+      const urg = pend.filter((t) => t.prioridade === 'Urgente').length;
+
+      // prazos de todas as áreas
+      const prazos = [
+        ...entregaveis.filter((e) => e.prazo && !['Concluído', 'Enviado'].includes(e.status)).map((e) => ({ tipo: 'Entregável', nome: e.nome, prazo: e.prazo, status: e.status, href: '#/entregaveis' })),
+        ...tarefas.filter((t) => t.prazo && t.status !== 'Concluída').map((t) => ({ tipo: 'Tarefa', nome: t.titulo, prazo: t.prazo, status: t.status, href: '#/entregaveis' })),
+        ...documentos.filter((d) => d.prazo && !['Enviado', 'Aprovado'].includes(d.status)).map((d) => ({ tipo: 'Documento', nome: d.nome, prazo: d.prazo, status: d.status, href: '#/documentos' })),
+        ...pend.filter((t) => t.prazo).map((t) => ({ tipo: 'Solicitação', nome: `${HK.ticketId(t.numero)} ${t.titulo}`, prazo: t.prazo, status: t.status, href: `#/solicitacoes?t=${t.id}` })),
+      ].sort((a, b) => a.prazo.localeCompare(b.prazo)).slice(0, 7);
+      const prox = prazos.find((p) => U.daysUntil(p.prazo) >= 0);
+
+      const prazoCls = (iso) => { const n = U.daysUntil(iso); return n < 0 ? 'overdue' : n <= 3 ? 'soon' : 'muted'; };
+      const nTarefas = (eid) => { const ts = tarefas.filter((t) => t.entregavel_id === eid); return [ts.filter((t) => t.status === 'Concluída').length, ts.length]; };
+      const nDocs = (eid) => documentos.filter((d) => d.entregavel_id === eid).length;
+
+      el.innerHTML = `
+        <div class="card hero">
+          <div><h2>HackIES 2026 · Desafio D02 — Alimentação elétrica de ROVs</h2>
+            <p>Arquitetura de conversão CC-CC: entrada de referência de 600 V, saída de 15 V e potência de referência de 1.500 W (guia v1.1, p. 4). Equipe: ${HK.state.integrantes.map((i) => U.esc(i.nome)).join(', ')}.</p></div>
+          ${prox ? `<div class="notice"><b>Próximo prazo:</b> ${U.esc(prox.nome)} — ${U.fmtDate(prox.prazo)} <span class="${prazoCls(prox.prazo)}">(${U.prazoLabel(prox.prazo)})</span></div>` : ''}
+        </div>
+
+        <div class="section-title">Atalhos</div>
+        <div class="shortcuts">
+          <a class="shortcut" href="#/solicitacoes">${U.icon('inbox')}Solicitações</a>
+          <a class="shortcut" href="#/gastos">${U.icon('wallet')}Gastos do projeto</a>
+          <a class="shortcut" href="#/documentos">${U.icon('file')}Documentos</a>
+          <a class="shortcut" href="#/entregaveis">${U.icon('flag')}Entregáveis</a>
+          <a class="shortcut" href="apresentacao.html" target="_blank" rel="noopener">${U.icon('slides')}Apresentação</a>
+        </div>
+
+        <div class="section-title">Situação atual</div>
+        <div class="grid grid-kpi">
+          ${U.kpi('Solicitações pendentes', String(pend.length), urg ? `<span class="overdue">${urg} urgente${urg > 1 ? 's' : ''}</span>` : 'nenhuma urgente', { icon: 'inbox', tone: urg ? 'critical' : '' })}
+          ${U.kpi('Gastos realizados', U.brl(fin.totais.realizado), `${fin.contagem.comprados} item(ns) comprado(s)`, { icon: 'wallet' })}
+          ${U.kpi('Gastos planejados (estimado)', U.brl(fin.totais.estimado), `a comprar: ${U.brl(fin.totais.previsto)}`, { icon: 'chart' })}
+          <div class="kpi"><div class="kpi-label">${U.icon('users')}Valor individual estimado</div>
+            <div class="kpi-sub" style="margin-top:6px">${fin.membros.filter((m) => m.participa || m.devidoEstimado).map((m) => `<div style="display:flex;justify-content:space-between;gap:8px"><span>${U.esc(m.nome)}</span><b class="num" style="color:var(--text)">${U.brl(m.devidoEstimado)}</b></div>`).join('') || 'Sem integrantes no rateio.'}</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:14px">
+          <div class="card"><div class="card-head">${U.icon('clock')}<h3>Próximos prazos</h3></div>
+            ${prazos.length ? `<ul class="list">${prazos.map((p) => `<li><span class="tag">${p.tipo}</span>
+              <span class="grow"><a href="${p.href}"><b>${U.esc(p.nome)}</b></a><small>${U.esc(p.status)}</small></span>
+              <span class="nowrap right"><b class="num">${U.fmtDate(p.prazo)}</b><br><small class="${prazoCls(p.prazo)}">${U.prazoLabel(p.prazo)}</small></span></li>`).join('')}</ul>`
+              : U.empty('Nenhum prazo em aberto.')}
+          </div>
+          <div class="card"><div class="card-head">${U.icon('flag')}<h3>Situação dos entregáveis</h3><a href="#/entregaveis" class="btn btn-sm btn-ghost">Abrir</a></div>
+            ${entregaveis.length ? `<ul class="list">${entregaveis.map((e) => { const [ok, tot] = nTarefas(e.id); return `<li>
+              <span class="grow"><b>${U.esc(e.nome)}</b><small>${U.esc(e.etapa || '')}${e.prazo ? ` · ${U.fmtDate(e.prazo)}` : ''} · ${tot ? `${ok}/${tot} tarefas` : 'sem tarefas'} · ${nDocs(e.id)} doc.</small></span>
+              ${U.chip(e.status)}</li>`; }).join('')}</ul>` : U.empty('Nenhum entregável cadastrado.')}
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:14px">
+          <div class="card"><div class="card-head">${U.icon('inbox')}<h3>Solicitações que precisam de atenção</h3><a href="#/solicitacoes" class="btn btn-sm btn-ghost">Abrir</a></div>
+            ${pend.length ? `<ul class="list">${pend.sort((a, b) => PRIO[a.prioridade] - PRIO[b.prioridade] || a.criado_em.localeCompare(b.criado_em)).slice(0, 6).map((t) => `<li>
+              <span class="kcard-id">${HK.ticketId(t.numero)}</span>
+              <span class="grow"><a href="#/solicitacoes?t=${t.id}"><b>${U.esc(t.titulo)}</b></a><small>${U.esc(t.categoria)} · ${U.esc(HK.nome(t.solicitante_id))} · ${U.esc(t.status)}</small></span>
+              ${U.chip(t.prioridade)}</li>`).join('')}</ul>` : U.empty('Nenhuma solicitação pendente.')}
+          </div>
+          <div class="card"><div class="card-head">${U.icon('history')}<h3>Últimas atualizações</h3><a href="#/admin/historico" class="btn btn-sm btn-ghost">Histórico</a></div>
+            ${hist.length ? `<ul class="timeline">${hist.slice(0, 8).map((h) => { const x = HK.histTexto(h); return `<li>${U.icon(h.acao === 'INSERT' ? 'plus' : h.acao === 'DELETE' ? 'trash' : 'edit')}
+              <div><b>${U.esc(x.quem)}</b> ${U.esc(x.texto)}${x.detalhe ? `<small>${U.esc(x.detalhe)}</small>` : ''}<small>${U.relTime(h.em)}</small></div></li>`; }).join('')}</ul>` : U.empty('Nenhuma alteração registrada ainda.')}
+          </div>
+        </div>
+        <p class="muted" style="margin-top:18px">Conhecimento técnico (pesquisas, decisões, diário): vault Obsidian <b>${U.esc((window.HK_CONFIG || {}).obsidianVault || 'HACKIES 2026')}</b> —
+          <a href="${U.esc(HK.obsidianHref('00 - Painel Principal'))}">abrir o Painel Principal no Obsidian</a>.</p>`;
+    },
+  };
+})(window.HK = window.HK || {});
