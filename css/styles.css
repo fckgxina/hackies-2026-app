@@ -403,9 +403,12 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13px; }
    Telas de toque grandes (sem hover) mantêm o menu aberto; celular usa o ☰. */
 @media (min-width: 861px) and (hover: hover) {
   .shell { padding-left: 64px; }
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: 100vh; width: 64px; z-index: 50; overflow: hidden;
-    transition: width .18s cubic-bezier(.2, .8, .2, 1), box-shadow .18s; }
-  .sidebar:hover, .sidebar:focus-within { width: var(--sidebar-w); box-shadow: 8px 0 24px rgba(0, 0, 0, .18); }
+  /* Largura fixa; o recolhimento é um recorte animado (clip-path), sem recalcular layout. */
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: 100vh; width: var(--sidebar-w); z-index: 50; overflow: hidden;
+    border-right-color: transparent; clip-path: inset(0 calc(100% - 64px) 0 0);
+    transition: clip-path .2s cubic-bezier(.2, .8, .2, 1), box-shadow .2s; }
+  .sidebar:hover, .sidebar:focus-within { clip-path: inset(0 -40px 0 0); border-right-color: var(--border); box-shadow: 8px 0 24px rgba(0, 0, 0, .18); }
+  .shell::before { content: ""; position: fixed; left: 64px; top: 0; bottom: 0; width: 1px; background: var(--border); z-index: 49; }
   .nav a { padding: 9px 13px; white-space: nowrap; }
   .brand { white-space: nowrap; }
   .sidebar .brand-text, .sidebar .nav a > span, .sidebar .nav a > .ic.muted, .sidebar .sidebar-foot .chip > span { opacity: 0; transition: opacity .12s; }
