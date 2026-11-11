@@ -107,13 +107,14 @@
     { route: 'documentos', label: 'Documentos', icon: 'file', view: 'documentos' },
     { route: 'entregaveis', label: 'Entregáveis e atividades', icon: 'flag', view: 'entregaveis' },
     { sep: true },
-    { href: 'apresentacao.html', label: 'Apresentação', icon: 'slides', external: true },
+    { acao: 'apresentacao', label: 'Apresentação', icon: 'slides', tag: 'Em breve' },
     { route: 'admin', label: 'Administração', icon: 'settings', view: 'admin' },
   ];
 
   function renderNav(active) {
     U.$('#nav').innerHTML = NAV.map((n) => {
       if (n.sep) return '<div class="nav-sep"></div>';
+      if (n.acao) return `<a href="#" data-acao="${n.acao}">${U.icon(n.icon)}<span>${n.label}</span>${n.tag ? `<span class="tag nav-tag">${n.tag}</span>` : ''}</a>`;
       if (n.external) return `<a href="${n.href}" target="_blank" rel="noopener">${U.icon(n.icon)}<span>${n.label}</span>${U.icon('external', 'muted')}</a>`;
       return `<a href="#/${n.route}" class="${n.route === active ? 'active' : ''}">${U.icon(n.icon)}<span>${n.label}</span></a>`;
     }).join('');
@@ -130,7 +131,7 @@
   let renderSeq = 0;
   HK.render = async () => {
     const r = HK.parseRoute();
-    const item = NAV.find((n) => !n.sep && !n.external && n.route === r.name) || NAV[0];
+    const item = NAV.find((n) => !n.sep && !n.external && !n.acao && n.route === r.name) || NAV[0];
     const view = HK.views[item.view];
     renderNav(item.route);
     U.$('#page-title').textContent = item.label;
@@ -244,8 +245,8 @@
       ${HK.db.mode === 'supabase' ? `<button class="btn-icon" id="pwd-btn" title="Alterar senha" aria-label="Alterar senha">${U.icon('key')}</button>` : ''}
       <button class="btn-icon" id="logout-btn" title="Sair" aria-label="Sair">${U.icon('logout')}</button>`;
     U.$('#sidebar-foot').innerHTML = HK.db.mode === 'demo'
-      ? `<span class="chip chip-warning"><i class="dot"></i>Modo demonstração</span>`
-      : `<span class="chip chip-good"><i class="dot"></i>Conectado ao Supabase</span>`;
+      ? `<span class="chip chip-warning" title="Modo demonstração"><i class="dot"></i><span>Modo demonstração</span></span>`
+      : `<span class="chip chip-good" title="Conectado ao Supabase"><i class="dot"></i><span>Conectado ao Supabase</span></span>`;
     if (HK.db.mode === 'demo') {
       U.$('#banner').innerHTML = `<div class="banner banner-demo">${U.icon('alert')}
         <span><b>Modo demonstração:</b> os dados ficam somente neste navegador e <b>não são compartilhados</b> com a equipe.</span>
@@ -261,6 +262,14 @@
     U.$('#menu-btn').addEventListener('click', () => { U.$('#sidebar').classList.add('open'); U.$('#scrim').hidden = false; });
     U.$('#scrim').addEventListener('click', closeSidebar);
     window.addEventListener('hashchange', HK.render);
+    // A apresentação ainda não tem conteúdo: o menu e o atalho só avisam (o arquivo apresentacao.html fica guardado).
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('[data-acao="apresentacao"]');
+      if (!a) return;
+      e.preventDefault();
+      closeSidebar();
+      U.toast('A apresentação ainda está sem conteúdo. Ela será montada quando a solução estiver definida.', 'info');
+    });
     HK.render();
   }
 

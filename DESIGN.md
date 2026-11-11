@@ -54,18 +54,30 @@ Use somente a escala de base 4: `--s1` 4, `--s2` 8, `--s3` 12, `--s4` 16, `--s5`
   - detalhes: 12–12,5 px.
 - Valores e datas usam números tabulares (`.num`).
 
-## 5. Cor
+## 5. Cor — paleta "Alta tensão" (escolhida em 11/11/2026)
 
-- **Paleta: a definir.** As opções estão em avaliação; a escolhida entra como *tokens* em `:root` (claro) e `prefers-color-scheme: dark` (escuro).
-- **Papéis fixos:**
-  - fundo e superfície;
-  - texto principal e secundário;
-  - ação (accent);
-  - bordas;
-  - estados: bom, atenção, sério e crítico.
-- **Contraste mínimo:** texto 4,5:1; ícones e controles 3:1. Os estados sempre vêm com texto ou ícone.
+Grafite industrial com **âmbar de energia**. O âmbar é **exclusivo da ação**: botões principais, item ativo do menu, marca, foco e links. Os tokens ficam em `css/styles.css`, em `:root` para o modo claro e em `prefers-color-scheme: dark` para o escuro.
+
+| Papel | Claro | Escuro | Regra |
+|---|---|---|---|
+| Fundo / card | #f4f4f5 / #ffffff | #111113 / #1a1a1d | — |
+| Texto / secundário / auxiliar | #18181b / #52525b / #6b6b73 | #ededee / #a8a8ad / #8b8b92 | ≥ 4,5:1 |
+| `--accent` (preenchimento de ação) | #f5b301 | #f5b301 | sempre com `--accent-ink` (#1a1300) por cima |
+| `--accent-text` (ação como texto, foco) | #8a5a00 | #f5b301 | nunca use `--accent` como cor de texto |
+| Atenção | laranja #a34a07 | #fb923c | não usa âmbar, para não confundir com ação |
+| Sério / crítico | #be123c / #b42323 | #fb7185 / #f87171 | — |
+| Informação / sucesso | #1d5fb0 / #087a08 | #8cc4ff / #5fd35f | — |
+
+- **Contraste verificado nos dois modos:** 736 textos em 12 telas, 0 falhas. Texto ≥ 4,5:1; ícones e foco ≥ 3:1.
+- **Estados:** sempre com texto ou ícone, nunca só a cor.
 - **Gráficos:** séries com paleta validada (`dataviz`), azul #2a78d6 e laranja #eb6834 no tema claro, e azul #3987e5 e laranja #d95926 no escuro.
+
+## 5.1 Menu lateral
+
+- **PC com mouse (≥ 861 px):** o menu fica recolhido num trilho de 64 px, só com ícones, e **abre ao passar o mouse** ou ao receber foco pelo teclado, **por cima do conteúdo**, sem empurrar a página.
+- **Tablet, celular e telas de toque:** o menu fica escondido e abre pelo botão ☰ como gaveta; toque fora para fechar.
+- **Item sem conteúdo:** fica no menu com a etiqueta "Em breve" e, ao clicar, mostra um aviso. Hoje isso vale para a Apresentação; o arquivo `apresentacao.html` está guardado, sem link.
 
 ## 6. Verificação obrigatória
 
-Antes de publicar, rode a checagem de alinhamento no console da aplicação, em 3 larguras (≈1440, ≈768 e 375 px). O script percorre todas as rotas, mede cada fileira de `.cards` e acusa sobra à direita, alturas diferentes, título e detalhe na mesma linha e rolagem horizontal. O resultado precisa ser **zero problemas**.
+Antes de publicar, rode as checagens de alinhamento, responsividade e contraste no console da aplicação. Use pelo menos 1920, 1366 e 1024 px (PC), 768 px (tablet) e 414 e 360 px (celular), nos modos claro e escuro. O script percorre todas as rotas, mede cada fileira de `.cards` e acusa sobra à direita, alturas diferentes, título e detalhe na mesma linha e rolagem horizontal. O resultado precisa ser **zero problemas**.

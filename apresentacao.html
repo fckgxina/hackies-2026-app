@@ -28,20 +28,20 @@
 -->
 <style>
   :root {
-    --bg: #0b1220;
-    --surface: #111a2e;
-    --surface-2: #16223b;
-    --line: #23324f;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --accent: #38bdf8;
-    --accent-2: #22d3ee;
-    --tag-guia: #22d3ee;
-    --tag-brs: #60a5fa;
-    --tag-calc: #a5b4fc;
-    --tag-hip: #fbbf24;
-    --tag-pend: #fb923c;
-    --tag-dev: #94a3b8;
+    --bg: #111113;
+    --surface: #1a1a1d;
+    --surface-2: #202024;
+    --line: #2c2c31;
+    --text: #ededee;
+    --muted: #a8a8ad;
+    --accent: #f5b301;
+    --accent-2: #ffc42e;
+    --tag-guia: #8cc4ff;
+    --tag-brs: #2dd4bf;
+    --tag-calc: #c4b5fd;
+    --tag-hip: #fb923c;
+    --tag-pend: #fb7185;
+    --tag-dev: #a8a8ad;
     --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
     --chrome-h: 52px;
@@ -72,7 +72,7 @@
     gap: 12px;
     padding: 0 16px;
     border-bottom: 1px solid var(--line);
-    background: rgba(11, 18, 32, .92);
+    background: rgba(17, 17, 19, .92);
     transition: opacity .25s;
     z-index: 5;
   }
@@ -138,7 +138,7 @@
     justify-content: center;
     gap: 14px;
     border-top: 1px solid var(--line);
-    background: rgba(11, 18, 32, .92);
+    background: rgba(17, 17, 19, .92);
     transition: opacity .25s;
     z-index: 5;
   }
@@ -149,7 +149,7 @@
   body.is-fs.idle { cursor: none; }
 
   /* ---------- Menu de seções ---------- */
-  .backdrop { position: fixed; inset: 0; background: rgba(2, 6, 15, .55); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 9; }
+  .backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .55); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 9; }
   .backdrop.open { opacity: 1; pointer-events: auto; }
   .drawer {
     position: fixed;
@@ -263,10 +263,10 @@
   /* Diagrama */
   .diagram { width: 100%; height: auto; display: block; }
   .diagram--h { display: none; }
-  .diagram .blk { fill: var(--surface); stroke: #334155; stroke-width: 2; }
+  .diagram .blk { fill: var(--surface); stroke: #4a4a52; stroke-width: 2; }
   .diagram .blk--key { stroke: var(--accent-2); stroke-width: 2.5; }
   .diagram .blk--ext { fill: var(--surface-2); }
-  .diagram .bottle { fill: rgba(56, 189, 248, .05); stroke: var(--accent); stroke-width: 2; stroke-dasharray: 9 7; }
+  .diagram .bottle { fill: rgba(245, 179, 1, .05); stroke: var(--accent); stroke-width: 2; stroke-dasharray: 9 7; }
   .diagram .bottle-label { fill: var(--accent); font-size: 15px; font-weight: 700; letter-spacing: .04em; }
   .diagram .t-title { fill: var(--text); font-size: 19px; font-weight: 700; font-family: var(--font); }
   .diagram .t-sub { fill: var(--muted); font-size: 15px; font-family: var(--font); }
