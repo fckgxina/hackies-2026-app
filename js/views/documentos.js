@@ -140,11 +140,11 @@
     const ent = (id) => (D.entregaveis.find((e) => e.id === id) || {}).nome;
 
     el.innerHTML = `
-      <div class="grid grid-kpi" style="margin-bottom:16px">
-        ${U.kpi('Documentos', String(D.docs.length))}${U.kpi('Em andamento', String(pend))}
-        ${U.kpi('Enviados / aprovados', String(cnt((d) => ['Enviado', 'Aprovado'].includes(d.status))), '', { tone: 'good' })}
-        ${U.kpi('Pendentes de correção', String(cnt((d) => d.status === 'Pendente de correção')), '', { tone: cnt((d) => d.status === 'Pendente de correção') ? 'critical' : '' })}
-        ${U.kpi('Com prazo vencido', String(atras), '', { tone: atras ? 'critical' : '' })}
+      <div class="cards cols-4" style="margin-bottom:var(--s5)">
+        ${U.kpi('Documentos', String(D.docs.length), `${cnt((d) => d.status === 'Não solicitado')} ainda não solicitado(s)`)}
+        ${U.kpi('Em andamento', String(pend), 'solicitados, em preparo ou revisão')}
+        ${U.kpi('Enviados ou aprovados', String(cnt((d) => ['Enviado', 'Aprovado'].includes(d.status))), '', { tone: 'good' })}
+        ${(() => { const corr = cnt((d) => d.status === 'Pendente de correção'); const n = corr + atras; return U.kpi('Precisam de atenção', String(n), `${atras} com prazo vencido · ${corr} a corrigir`, { tone: n ? 'critical' : '' }); })()}
       </div>
       <div class="toolbar">
         <button class="btn btn-primary" id="d-new">${U.icon('plus')} Novo documento</button>

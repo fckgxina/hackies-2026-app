@@ -132,7 +132,7 @@
   function backup(el) {
     if (!HK.perm.admin()) { el.insertAdjacentHTML('beforeend', '<div class="notice">Somente o administrador pode gerar backups completos. Cada tela possui exportação CSV dos dados exibidos.</div>'); return; }
     el.insertAdjacentHTML('beforeend', `
-      <div class="grid grid-2">
+      <div class="cards cols-2">
         <div class="card"><div class="card-head">${U.icon('download')}<h3>Backup completo (JSON)</h3></div>
           <p>Baixa todas as tabelas em um único arquivo, incluindo o histórico. Guarde uma cópia periodicamente (por exemplo, ao fim de cada etapa da competição).</p>
           <button class="btn btn-primary" id="b-json">${U.icon('download')} Baixar backup JSON</button></div>

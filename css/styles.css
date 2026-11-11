@@ -28,6 +28,8 @@
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   --sidebar-w: 236px;
+  /* Escala de espaçamento (base 4). Use somente estes valores. */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -181,31 +183,72 @@ input[readonly] { background: var(--surface-2); color: var(--text-2); }
 .tabs a:hover { color: var(--text); text-decoration: none; }
 .tabs a.on { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* ---------- cartões e grade ---------- */
-.grid { display: grid; gap: 14px; }
-.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.grid-kpi { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; min-width: 0; }
-.card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.card-head h3 { font-size: 14.5px; flex: 1; }
+/* ---------- grade de cards (PADRÃO — ver DESIGN.md) ----------
+   Uso: <div class="cards cols-N"> com N = 2, 3, 4 ou 6.
+   - O número de colunas é explícito e cai para divisores conforme a largura
+     da área de conteúdo (container query em .view), nunca "auto-fill".
+   - Todas as fileiras ocupam a largura inteira; cards da mesma fileira têm a
+     mesma altura (stretch).
+   - Rede de segurança: se a quantidade não dividir pelas colunas, o(s) último(s)
+     card(s) esticam até a borda — nunca sobra buraco nem card "órfão" estreito. */
+.view { container-type: inline-size; container-name: conteudo; }
+.cards { display: grid; gap: var(--s4); grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr)); align-items: stretch; }
+.cards + .cards { margin-top: var(--s4); }
+.cols-2 { --cols: 2; }
+.cols-3 { --cols: 3; }
+.cols-4 { --cols: 4; }
+.cols-6 { --cols: 6; }
+.cols-2 > :last-child:nth-child(2n+1) { grid-column: 1 / -1; }
+.cols-3 > :last-child:nth-child(3n+1) { grid-column: 1 / -1; }
+.cols-3 > :last-child:nth-child(3n+2) { grid-column: span 2; }
+.cols-4 > :last-child:nth-child(4n+1) { grid-column: 1 / -1; }
+.cols-4 > :nth-last-child(2):nth-child(4n+1), .cols-4 > :last-child:nth-child(4n+2) { grid-column: span 2; }
+.cols-4 > :last-child:nth-child(4n+3) { grid-column: span 2; }
+@container conteudo (max-width: 899px) {
+  .cols-4 { --cols: 2; }
+  .cols-6 { --cols: 3; }
+}
+@container conteudo (max-width: 719px) {
+  .cols-3 { --cols: 1; }
+  .cols-3 > * { grid-column: auto !important; }
+}
+@container conteudo (max-width: 639px) {
+  .cols-2 { --cols: 1; }
+  .cols-2 > * { grid-column: auto !important; }
+}
+@container conteudo (max-width: 479px) {
+  .cols-6 { --cols: 2; }
+  /* Rótulo do KPI pode usar 2 linhas no celular; a altura reservada é sempre 2 linhas,
+     para os valores ficarem na mesma altura em toda a fileira. */
+  .kpi-label { align-items: flex-start; min-height: calc(2 * 1.35em); line-height: 1.35; }
+  .kpi-label > span { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+}
+
+/* ---------- card ---------- */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: var(--s4) var(--s5) var(--s5); min-width: 0; }
+.card-head { display: flex; align-items: center; gap: var(--s2); min-height: 32px; margin-bottom: var(--s3); }
+.card-head h3 { font-size: 14.5px; flex: 1; min-width: 0; }
 .card-head .ic { color: var(--text-3); }
-.card + .card { margin-top: 0; }
-.stack > * + * { margin-top: 14px; }
-.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); font-weight: 700; margin: 22px 0 10px; }
-.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 15px; box-shadow: var(--shadow); min-width: 0; }
-.kpi-label { display: flex; align-items: center; gap: 6px; color: var(--text-2); font-size: 12.5px; font-weight: 560; }
+.stack > * + * { margin-top: var(--s4); }
+/* Título de seção: um heading de verdade (frase, sem caixa-alta), mais espaço acima do que abaixo. */
+.section-title { font-size: 15px; font-weight: 650; color: var(--text); margin: var(--s6) 0 var(--s3); letter-spacing: -.005em; display: flex; align-items: center; gap: var(--s2); }
+.view > .section-title:first-child, .card .section-title { margin-top: var(--s5); }
+
+/* ---------- KPI (PADRÃO: rótulo 1 linha · valor · detalhe 1 linha) ---------- */
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--s3) var(--s4) var(--s4); box-shadow: var(--shadow); min-width: 0; display: flex; flex-direction: column; gap: var(--s1); }
+.kpi-label { display: flex; align-items: center; gap: 6px; color: var(--text-2); font-size: 12.5px; font-weight: 560; min-width: 0; }
+.kpi-label > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi-label .ic { width: 15px; height: 15px; color: var(--text-3); }
-.kpi-value { font-size: 21px; font-weight: 680; margin-top: 4px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; overflow-wrap: anywhere; }
-.kpi-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.kpi-value { font-size: 22px; font-weight: 680; font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
+.kpi-sub { font-size: 12px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi-critical .kpi-value { color: var(--critical-ink); }
 .kpi-warning .kpi-value { color: var(--warning-ink); }
 .kpi-good .kpi-value { color: var(--good-ink); }
 .hero { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; padding: 18px 20px; }
 .hero h2 { font-size: 19px; }
 .hero p { color: var(--text-2); margin: 4px 0 0; max-width: 760px; }
-.shortcuts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-.shortcut { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-weight: 580; box-shadow: var(--shadow); }
+.shortcut { display: flex; align-items: center; gap: var(--s3); min-height: 56px; padding: var(--s3) var(--s4); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-weight: 580; box-shadow: var(--shadow); min-width: 0; }
+.shortcut > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .shortcut:hover { border-color: var(--accent); text-decoration: none; }
 .shortcut .ic { color: var(--accent); }
 
@@ -300,7 +343,8 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .list li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); min-width: 0; }
 .list li:last-child { border-bottom: 0; }
 .list .grow { flex: 1; min-width: 0; }
-.list .grow > b, .list .grow > span { display: block; overflow: hidden; text-overflow: ellipsis; }
+/* Cada linha de lista: título em cima, detalhe embaixo — nunca na mesma linha. */
+.list .grow > * { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .list small { color: var(--text-3); }
 .timeline { list-style: none; margin: 0; padding: 0; }
 .timeline li { display: grid; grid-template-columns: 20px 1fr; gap: 8px; padding: 7px 0; font-size: 13px; }
@@ -341,10 +385,11 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .empty .ic { width: 28px; height: 28px; }
 .empty p { margin: 0; max-width: 420px; }
 
+/* ---------- superfícies do navegador ---------- */
+html { accent-color: var(--accent); caret-color: var(--accent); scrollbar-color: var(--border-strong) transparent; }
+::selection { background: color-mix(in srgb, var(--accent) 26%, transparent); }
+
 /* ---------- responsivo ---------- */
-@media (max-width: 1100px) {
-  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 @media (max-width: 860px) {
   .only-mobile { display: inline-grid !important; }
   .sidebar { position: fixed; left: 0; top: 0; z-index: 60; transform: translateX(-100%); transition: transform .2s; box-shadow: var(--shadow-lg); }
@@ -353,7 +398,6 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13px; }
   .topbar { padding: 10px 16px; }
   .view { padding: 16px 16px 40px; }
   .banner { padding: 8px 16px; }
-  .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); }
   .form, .form-3 { grid-template-columns: minmax(0, 1fr); }
   .userchip .who { display: none; }
   .kanban { grid-template-columns: repeat(5, minmax(240px, 82vw)); scroll-snap-type: x mandatory; }

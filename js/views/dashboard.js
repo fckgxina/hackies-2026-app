@@ -37,25 +37,33 @@
           ${prox ? `<div class="notice"><b>Próximo prazo:</b> ${U.esc(prox.nome)} — ${U.fmtDate(prox.prazo)} <span class="${prazoCls(prox.prazo)}">(${U.prazoLabel(prox.prazo)})</span></div>` : ''}
         </div>
 
-        <div class="section-title">Atalhos</div>
-        <div class="shortcuts">
-          <a class="shortcut" href="#/solicitacoes">${U.icon('inbox')}Solicitações</a>
-          <a class="shortcut" href="#/gastos">${U.icon('wallet')}Gastos do projeto</a>
-          <a class="shortcut" href="#/documentos">${U.icon('file')}Documentos</a>
-          <a class="shortcut" href="#/entregaveis">${U.icon('flag')}Entregáveis</a>
-          <a class="shortcut" href="apresentacao.html" target="_blank" rel="noopener">${U.icon('slides')}Apresentação</a>
+        <h2 class="section-title">Atalhos</h2>
+        <div class="cards cols-6">
+          <a class="shortcut" href="#/solicitacoes">${U.icon('inbox')}<span>Solicitações</span></a>
+          <a class="shortcut" href="#/gastos">${U.icon('wallet')}<span>Gastos</span></a>
+          <a class="shortcut" href="#/documentos">${U.icon('file')}<span>Documentos</span></a>
+          <a class="shortcut" href="#/entregaveis">${U.icon('flag')}<span>Entregáveis</span></a>
+          <a class="shortcut" href="apresentacao.html" target="_blank" rel="noopener">${U.icon('slides')}<span>Apresentação</span></a>
+          <a class="shortcut" href="${U.esc(HK.obsidianHref('00 - Painel Principal'))}" title="Abre o vault no Obsidian (precisa do Obsidian instalado com o vault)">${U.icon('book')}<span>Vault Obsidian</span></a>
         </div>
 
-        <div class="section-title">Situação atual</div>
-        <div class="grid grid-kpi">
+        <h2 class="section-title">Situação atual</h2>
+        <div class="cards cols-4">
           ${U.kpi('Solicitações pendentes', String(pend.length), urg ? `<span class="overdue">${urg} urgente${urg > 1 ? 's' : ''}</span>` : 'nenhuma urgente', { icon: 'inbox', tone: urg ? 'critical' : '' })}
           ${U.kpi('Gastos realizados', U.brl(fin.totais.realizado), `${fin.contagem.comprados} item(ns) comprado(s)`, { icon: 'wallet' })}
-          ${U.kpi('Gastos planejados (estimado)', U.brl(fin.totais.estimado), `a comprar: ${U.brl(fin.totais.previsto)}`, { icon: 'chart' })}
-          <div class="kpi"><div class="kpi-label">${U.icon('users')}Valor individual estimado</div>
-            <div class="kpi-sub" style="margin-top:6px">${fin.membros.filter((m) => m.participa || m.devidoEstimado).map((m) => `<div style="display:flex;justify-content:space-between;gap:8px"><span>${U.esc(m.nome)}</span><b class="num" style="color:var(--text)">${U.brl(m.devidoEstimado)}</b></div>`).join('') || 'Sem integrantes no rateio.'}</div></div>
+          ${U.kpi('Gastos planejados', U.brl(fin.totais.estimado), `estimado · a comprar ${U.brl(fin.totais.previsto)}`, { icon: 'chart' })}
+          ${(() => {
+            const part = fin.membros.filter((m) => m.participa);
+            if (!part.length) return U.kpi('Cota por integrante', '—', 'ninguém com login ativo no rateio', { icon: 'users' });
+            const vals = part.map((m) => m.devidoEstimado);
+            const iguais = Math.max(...vals) - Math.min(...vals) <= 1;
+            return iguais
+              ? U.kpi('Cota por integrante', U.brl(Math.max(...vals)), `estimada · dividida entre ${part.length}`, { icon: 'users' })
+              : U.kpi('Cota por integrante', `${U.brl(Math.min(...vals))} – ${U.brl(Math.max(...vals))}`, '<a href="#/gastos">varia: há gastos individuais</a>', { icon: 'users' });
+          })()}
         </div>
 
-        <div class="grid grid-2" style="margin-top:14px">
+        <div class="cards cols-2">
           <div class="card"><div class="card-head">${U.icon('clock')}<h3>Próximos prazos</h3></div>
             ${prazos.length ? `<ul class="list">${prazos.map((p) => `<li><span class="tag">${p.tipo}</span>
               <span class="grow"><a href="${p.href}"><b>${U.esc(p.nome)}</b></a><small>${U.esc(p.status)}</small></span>
@@ -69,7 +77,7 @@
           </div>
         </div>
 
-        <div class="grid grid-2" style="margin-top:14px">
+        <div class="cards cols-2">
           <div class="card"><div class="card-head">${U.icon('inbox')}<h3>Solicitações que precisam de atenção</h3><a href="#/solicitacoes" class="btn btn-sm btn-ghost">Abrir</a></div>
             ${pend.length ? `<ul class="list">${pend.sort((a, b) => PRIO[a.prioridade] - PRIO[b.prioridade] || a.criado_em.localeCompare(b.criado_em)).slice(0, 6).map((t) => `<li>
               <span class="kcard-id">${HK.ticketId(t.numero)}</span>

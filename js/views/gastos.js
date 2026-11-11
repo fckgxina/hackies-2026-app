@@ -69,7 +69,7 @@
     const O = r.orcamento;
 
     el.insertAdjacentHTML('beforeend', `
-      <div class="grid grid-kpi">
+      <div class="cards cols-4">
         ${U.kpi('Gastos realizados', U.brl(T.realizado), 'comprados, pagos ou recebidos', { icon: 'wallet' })}
         ${U.kpi('Total estimado', U.brl(T.estimado), 'todos os itens não cancelados', { icon: 'chart' })}
         ${U.kpi('Efetivamente pago', U.brl(T.pago), 'com pagamento registrado', { icon: 'check', tone: 'good' })}
@@ -86,7 +86,7 @@
 
       <div class="section-title">Divisão entre os integrantes</div>
       ${membrosTabela(r, { compacto: true })}
-      <div class="grid grid-2" style="margin-top:14px">
+      <div class="cards cols-2" style="margin-top:var(--s4)">
         <div class="card"><div class="card-head">${U.icon('users')}<h3>Devido × contribuído</h3></div>
           <div class="legend"><span><i style="background:var(--series-1)"></i>Deveria contribuir (realizado)</span><span><i style="background:var(--series-2)"></i>Já contribuiu</span></div>
           <div class="pair-bars">${r.membros.filter((m) => m.participa || m.devido || m.contribuido).map((m) => `<div class="pair-row"><div class="hbar-label">${U.esc(m.nome)}</div><div class="lines">
@@ -103,7 +103,7 @@
       </div>
 
       <div class="section-title">Análise por item</div>
-      <div class="grid grid-3">
+      <div class="cards cols-3">
         <div class="card"><div class="card-head"><h3>Maior custo total</h3></div>${lista(r.topCusto, (i) => linhaItem(i, `<b>${U.brl(i.subtotal)}</b><br><small>${T.estimado ? U.pct((i.subtotal / T.estimado) * 100) : ''}</small>`), 'Sem itens.')}</div>
         <div class="card"><div class="card-head"><h3>Maior valor unitário</h3></div>${lista(r.topUnitario, (i) => linhaItem(i, `<b>${U.brl(i.valor_unitario_centavos)}</b><br><small>× ${U.fmtQty(i.quantidade)}</small>`), 'Sem itens.')}</div>
         <div class="card"><div class="card-head"><h3>Maior quantidade comprada</h3></div>${lista(r.topQuantidade, (i) => linhaItem(i, `<b>${U.fmtQty(i.quantidade)} un.</b><br><small>${U.brl(i.subtotal)}</small>`), 'Nenhum item comprado ainda.')}</div>
@@ -114,7 +114,7 @@
 
       <div class="section-title">Orçamento</div>
       <div class="card">${O ? `
-          <div class="grid grid-kpi" style="margin-bottom:14px">
+          <div class="cards cols-4" style="margin-bottom:var(--s4)">
             ${U.kpi('Orçamento definido', U.brl(O.valor))}${U.kpi('Utilizado (realizado)', U.brl(O.usado), U.pct(O.pctUsado))}
             ${U.kpi('Disponível agora', U.brl(O.disponivel), '', { tone: O.disponivel < 0 ? 'critical' : '' })}
             ${U.kpi('Disponível após previstos', U.brl(O.disponivelAposPrevistos), `comprometido: ${U.pct(O.pctComprometido)}`, { tone: O.disponivelAposPrevistos < 0 ? 'critical' : '' })}
@@ -125,7 +125,7 @@
       </div>
 
       <div class="section-title">Análise de compras</div>
-      <div class="grid grid-2">
+      <div class="cards cols-2">
         <div class="card"><div class="card-head"><h3>Ainda não adquiridos</h3><span class="badge">${r.compras.naoAdquiridos.length}</span></div>${lista(r.compras.naoAdquiridos, (i) => linhaItem(i, U.brl(i.subtotal)), 'Nenhum item pendente de compra.')}</div>
         <div class="card"><div class="card-head"><h3>Comprados e não recebidos</h3><span class="badge">${r.compras.compradosNaoRecebidos.length}</span></div>${lista(r.compras.compradosNaoRecebidos, (i) => linhaItem(i, U.brl(i.subtotal)), 'Nenhum.')}</div>
         <div class="card"><div class="card-head"><h3>Adquiridos sem pagamento registrado</h3><span class="badge">${r.compras.semPagamento.length}</span></div>${lista(r.compras.semPagamento, (i) => linhaItem(i, U.brl(i.subtotal)), 'Nenhum.')}</div>
@@ -455,7 +455,7 @@
     const orc = HK.state.config.orcamento_centavos;
     const uso = (id) => D.itens.filter((i) => i.categoria_id === id).length;
     el.insertAdjacentHTML('beforeend', `
-      <div class="grid grid-2">
+      <div class="cards cols-2">
         <div class="card"><div class="card-head">${U.icon('wallet')}<h3>Orçamento do projeto</h3></div>
           ${HK.perm.admin() ? `<form id="orc-form" class="form" novalidate style="grid-template-columns:1fr auto;align-items:end">
             ${U.field('Valor total (R$)', `<input type="text" inputmode="decimal" name="orc" placeholder="sem orçamento definido" value="${U.esc(orc == null ? '' : U.centsToInput(orc))}">`, { hint: 'Deixe vazio para não usar orçamento.' })}

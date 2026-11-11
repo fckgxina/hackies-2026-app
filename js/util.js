@@ -139,6 +139,7 @@
     copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/>',
     key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
     box: '<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>',
+    book: '<path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/><path d="M9 7h6"/>',
   };
   U.icon = (name, cls) =>
     `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[name] || ''}</svg>`;
@@ -392,9 +393,10 @@
   };
   U.chip = (text, tone) => (text ? `<span class="chip chip-${tone || TONE[text] || 'neutral'}"><i class="dot"></i>${U.esc(text)}</span>` : '');
 
+  /** Card de indicador — anatomia única: rótulo (1 linha) · valor · detalhe (1 linha, sempre presente p/ alinhar). */
   U.kpi = (label, value, sub, { tone, icon } = {}) =>
-    `<div class="kpi ${tone ? 'kpi-' + tone : ''}"><div class="kpi-label">${icon ? U.icon(icon) : ''}${U.esc(label)}</div>
-     <div class="kpi-value">${value}</div>${sub ? `<div class="kpi-sub">${sub}</div>` : ''}</div>`;
+    `<div class="kpi ${tone ? 'kpi-' + tone : ''}"><div class="kpi-label" title="${U.esc(label)}">${icon ? U.icon(icon) : ''}<span>${U.esc(label)}</span></div>
+     <div class="kpi-value">${value}</div><div class="kpi-sub">${sub || '&nbsp;'}</div></div>`;
 
   U.empty = (text, action) => `<div class="empty">${U.icon('box')}<p>${U.esc(text)}</p>${action || ''}</div>`;
 

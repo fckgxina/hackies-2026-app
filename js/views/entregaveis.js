@@ -65,7 +65,7 @@
       <div class="toolbar"><h2 style="font-size:16px">Entregáveis</h2><span class="grow"></span>
         ${HK.perm.editor() ? `<button class="btn" id="e-new">${U.icon('plus')} Novo entregável</button>` : ''}</div>
       <p class="muted" style="margin-top:-6px">Materiais obrigatórios conforme o guia "Desafios e Premiações" v1.1 (p. 2). Formatos, horários e links: edital (arts. 26–29) e grupo oficial da HACKIES.</p>
-      ${D.ent.length ? `<div class="grid grid-3">${D.ent.map((e) => {
+      ${D.ent.length ? `<div class="cards cols-3">${D.ent.map((e) => {
         const ts = D.tar.filter((t) => t.entregavel_id === e.id); const ok = ts.filter((t) => t.status === 'Concluída').length;
         const docs = D.docs.filter((d) => d.entregavel_id === e.id); const done = ['Concluído', 'Enviado'].includes(e.status); const pode = HK.perm.canEdit(e);
         return `<div class="card"><div class="card-head"><h3>${U.esc(e.nome)}</h3>${pode ? `<button class="btn-icon" data-eedit="${e.id}" aria-label="Editar">${U.icon('edit')}</button>` : ''}${HK.perm.admin() ? `<button class="btn-icon danger" data-edel="${e.id}" aria-label="Excluir">${U.icon('trash')}</button>` : ''}</div>

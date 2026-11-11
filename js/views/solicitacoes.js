@@ -213,10 +213,11 @@
     const urgentes = all.filter((t) => t.prioridade === 'Urgente' && !['Concluída', 'Não realizada'].includes(t.status)).length;
     const m = modo();
     el.innerHTML = `
-      <div class="grid grid-kpi" style="margin-bottom:16px">
-        ${U.kpi('Total', String(all.length))}${U.kpi('Novas', String(count('Nova')))}${U.kpi('Em análise', String(count('Em análise')))}
-        ${U.kpi('Em andamento', String(count('Em andamento')))}${U.kpi('Concluídas', String(count('Concluída')))}${U.kpi('Não realizadas', String(count('Não realizada')))}
-        ${U.kpi('Urgentes em aberto', String(urgentes), '', { tone: urgentes ? 'critical' : '' })}
+      <div class="cards cols-6" style="margin-bottom:var(--s5)">
+        ${U.kpi('Novas', String(count('Nova')), `de ${all.length} no total`)}${U.kpi('Em análise', String(count('Em análise')))}
+        ${U.kpi('Em andamento', String(count('Em andamento')))}${U.kpi('Concluídas', String(count('Concluída')))}
+        ${U.kpi('Não realizadas', String(count('Não realizada')))}
+        ${U.kpi('Urgentes em aberto', String(urgentes), urgentes ? 'precisam de atenção' : '', { tone: urgentes ? 'critical' : '' })}
       </div>
       <div class="toolbar">
         <button class="btn btn-primary" id="tk-new">${U.icon('plus')} Nova solicitação</button>
