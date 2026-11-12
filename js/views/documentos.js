@@ -14,13 +14,16 @@
     'Apresentação': 'Slides, roteiros, imagens e diagramas finais.',
     'Administrativo': 'Autorizações, declarações e documentos administrativos.',
     'Outros': 'Demais documentos e materiais de apoio.',
+    'Descartados': 'Documentos que não serão usados; ficam guardados só para consulta.',
   };
+  /** Categoria que fica sempre por último, mesmo que outras sejam criadas depois. */
+  const CAT_FINAL = 'Descartados';
   const st = { q: '', categoria: '', status: '', responsavel: '' };
   let D = { docs: [], versoes: [], entregaveis: [], cats: [] };
 
   async function load() {
     const [docs, versoes, entregaveis, catsDb] = await Promise.all([HK.db.list('documentos', { order: 'nome', asc: true }), HK.db.list('documento_versoes'), HK.db.list('entregaveis', { order: 'prazo', asc: true }), HK.db.list('categorias_documento', { order: 'ordem', asc: true })]);
-    D = { docs, versoes, entregaveis, cats: catsDb };
+    D = { docs, versoes, entregaveis, cats: catsDb.sort((a, b) => (a.nome === CAT_FINAL) - (b.nome === CAT_FINAL)) };
   }
 
   const proxVersao = (atual) => {

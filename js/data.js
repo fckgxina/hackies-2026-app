@@ -112,7 +112,7 @@
         t: {
           perfis: [{ ...DEMO_USER, criado_em: now() }], integrantes: ints, categorias_gasto: cats,
           configuracoes: [{ chave: 'orcamento_centavos', valor: null, atualizado_em: now() }],
-          categorias_documento: ['Pesquisa', 'Currículos', 'Competição', 'Entregáveis', 'Apresentação', 'Administrativo', 'Outros'].map((nome, i) => ({ id: uuid(), nome, ordem: i + 1, criado_em: now() })),
+          categorias_documento: ['Pesquisa', 'Currículos', 'Competição', 'Entregáveis', 'Apresentação', 'Administrativo', 'Outros', 'Descartados'].map((nome, i) => ({ id: uuid(), nome, ordem: i + 1, criado_em: now() })),
           itens: [], cotacoes: [], contribuicoes: [], entregaveis: ent, documentos: [], documento_versoes: [],
           tarefas: [], tickets: [], ticket_comentarios: [], historico: [],
         },

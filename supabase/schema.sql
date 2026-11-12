@@ -587,7 +587,7 @@ create table if not exists public.categorias_documento (
 );
 insert into public.categorias_documento (nome, ordem) values
   ('Pesquisa', 1), ('Currículos', 2), ('Competição', 3), ('Entregáveis', 4),
-  ('Apresentação', 5), ('Administrativo', 6), ('Outros', 7)
+  ('Apresentação', 5), ('Administrativo', 6), ('Outros', 7), ('Descartados', 8)
 on conflict (nome) do nothing;
 
 alter table public.documentos drop constraint if exists documentos_categoria_check;
