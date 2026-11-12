@@ -214,6 +214,14 @@ input[readonly] { background: var(--surface-2); color: var(--text-2); }
 .ent-docs { margin-top: var(--s4); }
 .ent-docs-head { display: flex; align-items: center; gap: var(--s2); font-size: 12.5px; font-weight: 600; color: var(--text-2); }
 .ent-docs-head .ic { width: 15px; height: 15px; color: var(--text-3); }
+/* Cabeçalho clicável: minimiza/expande a lista (<details>); a seta gira quando fechada. */
+summary.ent-docs-head { list-style: none; cursor: pointer; user-select: none; margin: 0 calc(-1 * var(--s2)); padding: var(--s1) var(--s2); border-radius: 7px; }
+summary.ent-docs-head::-webkit-details-marker { display: none; }
+summary.ent-docs-head:hover { background: var(--surface-2); color: var(--text); }
+summary.ent-docs-head:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ent-docs-head .ent-docs-chev { margin-left: auto; transition: transform .15s; }
+.ent-docs:not([open]) .ent-docs-chev { transform: rotate(-90deg); }
+@media (prefers-reduced-motion: reduce) { .ent-docs-head .ent-docs-chev { transition: none; } }
 .ent-docs-empty { margin: var(--s2) 0 0; font-size: 12.5px; }
 .ent-doclist { margin-top: var(--s1); }
 .ent-doclist li { padding: var(--s2) 0; }
