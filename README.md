@@ -106,14 +106,14 @@ Os testes ficam em [`tests/finance.test.js`](tests/finance.test.js) e rodam com 
 
 | Ação | Visitante | Membro | Editor | Admin |
 |---|:-:|:-:|:-:|:-:|
-| Consultar solicitações (sem comentários) e entregáveis | ✓ | ✓ | ✓ | ✓ |
-| Consultar gastos, documentos, comentários e histórico (exceto documentos restritos) | | ✓ | ✓ | ✓ |
+| Consultar solicitações e comentários, entregáveis, gastos (itens, cotações, contribuições, fotos, orçamento) e documentos (exceto os restritos) | ✓ | ✓ | ✓ | ✓ |
+| Consultar o histórico de alterações e os perfis dos usuários | | ✓ | ✓ | ✓ |
 | Criar solicitações, itens, cotações, contribuições, documentos, tarefas | | ✓ | ✓ | ✓ |
 | Editar o que criou ou o que está sob sua responsabilidade | | ✓ | ✓ | ✓ |
 | Editar e excluir registros de qualquer pessoa; editar categorias; documentos restritos | | | ✓ | ✓ |
 | Excluir tickets e entregáveis; usuários, integrantes, orçamento, restauração, backup | | | | ✓ |
 
-**Visitante** (papel criado em 12/11/2026, migração `supabase/migracao-2026-11-12-visitante.sql`): conta só de leitura, sem integrante vinculado e fora da divisão de gastos. Não grava nada — o banco recusa qualquer inserção ou alteração. Para criar um visitante: Authentication → Users → Add user e, em Administração, marque o papel "Visitante" e ative.
+**Visitante** (papel criado em 12/11/2026, migração `supabase/migracao-2026-11-12-visitante.sql`): conta só de leitura. Vê tudo o que a equipe vê, menos o histórico de alterações, os perfis dos usuários e a Administração. Não tem integrante vinculado, fica fora da divisão de gastos e não pode ser escolhido como solicitante. Não grava nada: o banco recusa qualquer inserção, alteração ou exclusão (RLS: `e_leitor()` lê, `e_membro()` grava). A divisão de gastos que o visitante vê vem da função `integrantes_com_acesso()`, que devolve só os IDs dos integrantes com login ativo, sem e-mail nem papel. Para criar um visitante: Authentication → Users → Add user e, em Administração, marque o papel "Visitante" e ative.
 
 As regras ficam no banco (RLS em `schema.sql`) e a interface só as reflete. Todas as alterações são gravadas automaticamente na tabela `historico`, com o usuário, a data e os valores antes e depois.
 

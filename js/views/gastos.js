@@ -177,7 +177,7 @@
     const nCot = (id) => D.cotacoes.filter((c) => c.item_id === id).length;
     el.insertAdjacentHTML('beforeend', `
       <div class="toolbar">
-        <button class="btn btn-primary" id="i-new">${U.icon('plus')} Adicionar item</button>
+        ${HK.perm.membro() ? `<button class="btn btn-primary" id="i-new">${U.icon('plus')} Adicionar item</button>` : ''}
         <div class="filters">
           <input type="search" id="i-q" placeholder="Buscar item, fornecedor…" value="${U.esc(f.q)}" aria-label="Buscar">
           <select data-f="categoria" aria-label="Categoria">${U.opts(HK.state.categorias, f.categoria, { empty: 'Categoria: todas' })}</select>
@@ -202,7 +202,7 @@
           ${HK.perm.editor() ? `<button class="btn-icon danger" data-del="${i.id}" title="Excluir" aria-label="Excluir">${U.icon('trash')}</button>` : ''}</td></tr>`).join('')}</tbody>
       <tfoot><tr><td></td><td colspan="4">Total dos itens exibidos (sem cancelados) · ${ativos.length} item(ns)</td><td class="right num">${U.brl(ativos.reduce((a, i) => a + F.subtotal(i), 0))}</td><td colspan="4"></td></tr></tfoot></table></div>`}`);
 
-    el.querySelector('#i-new').addEventListener('click', () => itemForm(null));
+    const inew = el.querySelector('#i-new'); if (inew) inew.addEventListener('click', () => itemForm(null));
     el.querySelector('#i-csv').addEventListener('click', () => exportarItens(list));
     el.querySelector('#i-q').addEventListener('input', U.debounce((e) => { st.filtros.q = e.target.value; draw(el, 'itens'); const x = el.querySelector('#i-q'); x.focus(); x.setSelectionRange(x.value.length, x.value.length); }, 250));
     el.querySelectorAll('[data-f]').forEach((s) => s.addEventListener('change', () => { st.filtros[s.dataset.f] = s.value; draw(el, 'itens'); }));
@@ -348,10 +348,10 @@
             <td class="actions">${pode ? `<button class="btn btn-sm" data-usar="${c.id}" title="Copiar preço, loja e link para o item">Usar no item</button>` : ''}
               ${HK.perm.editor() || HK.perm.own(c) ? `<button class="btn-icon" data-ced="${c.id}" aria-label="Editar">${U.icon('edit')}</button><button class="btn-icon danger" data-cdel="${c.id}" aria-label="Excluir">${U.icon('trash')}</button>` : ''}</td></tr>`).join('')}
         </tbody></table></div>` : U.empty('Nenhuma cotação registrada para este item.')}`,
-      footer: '<button class="btn" data-close>Fechar</button><button class="btn btn-primary" data-add>' + U.icon('plus') + ' Registrar cotação</button>',
+      footer: '<button class="btn" data-close>Fechar</button>' + (HK.perm.membro() ? '<button class="btn btn-primary" data-add>' + U.icon('plus') + ' Registrar cotação</button>' : ''),
     });
     const reabrir = async () => { await load(); m.close(); cotacoes(itemId); };
-    m.el.querySelector('[data-add]').addEventListener('click', () => cotacaoForm(item, null, reabrir));
+    const add = m.el.querySelector('[data-add]'); if (add) add.addEventListener('click', () => cotacaoForm(item, null, reabrir));
     m.el.querySelectorAll('[data-ced]').forEach((b) => b.addEventListener('click', () => cotacaoForm(item, D.cotacoes.find((c) => c.id === b.dataset.ced), reabrir)));
     m.el.querySelectorAll('[data-cdel]').forEach((b) => b.addEventListener('click', async () => {
       if (!(await U.confirm('Excluir esta cotação?', { danger: true, okLabel: 'Excluir' }))) return;
@@ -412,14 +412,14 @@
       <div class="card" style="margin-top:var(--s4)"><div class="card-head">${U.icon('wallet')}<h3>Resumo de acerto</h3></div>${acertoHTML(r)}
         <p class="muted" style="font-size:12px;margin-top:var(--s3)">A divisão igualitária não muda com os pagamentos: as contribuições servem para acompanhar quem já pagou e quem tem valores pendentes.</p></div>
       <div class="section-title">Pagamentos registrados</div>
-      <div class="toolbar"><button class="btn btn-primary" id="c-new">${U.icon('plus')} Registrar contribuição</button><span class="grow"></span><button class="btn" id="c-csv">${U.icon('download')} CSV</button></div>
+      <div class="toolbar">${HK.perm.membro() ? `<button class="btn btn-primary" id="c-new">${U.icon('plus')} Registrar contribuição</button>` : ''}<span class="grow"></span><button class="btn" id="c-csv">${U.icon('download')} CSV</button></div>
       ${D.contribs.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Integrante</th><th class="right">Valor</th><th>Item ou despesa</th><th>Observação</th><th>Registrado por</th><th class="actions"></th></tr></thead><tbody>
         ${D.contribs.map((c) => { const it = D.itens.find((i) => i.id === c.item_id); return `<tr><td class="nowrap">${U.fmtDate(c.data)}</td><td><b>${U.esc(HK.nome(c.integrante_id))}</b></td>
           <td class="right num"><b>${U.brl(c.valor_centavos)}</b></td><td>${it ? U.esc(it.nome) : '<span class="muted">—</span>'}</td><td>${U.esc(c.observacao || '')}</td>
           <td><small>${U.esc(HK.perfilNome(c.criado_por))}</small></td>
           <td class="actions">${HK.perm.editor() || HK.perm.own(c) ? `<button class="btn-icon" data-ced="${c.id}" aria-label="Editar">${U.icon('edit')}</button><button class="btn-icon danger" data-cdel="${c.id}" aria-label="Excluir">${U.icon('trash')}</button>` : ''}</td></tr>`; }).join('')}
       </tbody><tfoot><tr><td colspan="2">Total contribuído</td><td class="right num">${U.brl(r.totais.contribuido)}</td><td colspan="4"></td></tr></tfoot></table></div>` : U.empty('Nenhuma contribuição registrada.')}`);
-    el.querySelector('#c-new').addEventListener('click', () => contribForm(null));
+    const cnew = el.querySelector('#c-new'); if (cnew) cnew.addEventListener('click', () => contribForm(null));
     el.querySelector('#c-csv').addEventListener('click', () => U.download(`contribuicoes-${U.stamp()}.csv`, U.toCSV(D.contribs, [
       { label: 'Data', value: (c) => U.fmtDate(c.data) }, { label: 'Integrante', value: (c) => HK.nome(c.integrante_id) },
       { label: 'Valor (R$)', value: (c) => U.csvMoney(c.valor_centavos) }, { label: 'Item', value: (c) => ((D.itens.find((i) => i.id === c.item_id) || {}).nome || '') },

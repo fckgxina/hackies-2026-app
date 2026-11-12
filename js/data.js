@@ -29,6 +29,8 @@
       async resetPassword(email) { return chk(await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname })); },
       async updatePassword(password) { return chk(await sb.auth.updateUser({ password })); },
       async profile(uid) { return chk(await sb.from('perfis').select('*').eq('id', uid).maybeSingle()); },
+      /** IDs dos integrantes com login ativo vinculado (função do banco; serve ao visitante, que não lê perfis). */
+      async integrantesComAcesso() { return (chk(await sb.rpc('integrantes_com_acesso')) || []).map((r) => r.integrante_id); },
 
       async list(table, { eq, order, asc, limit, inList } = {}) {
         const [col, dir] = order ? [order, !!asc] : ORDER[table] || ['criado_em', false];
@@ -178,6 +180,9 @@
       async resetPassword() { throw new Error('Indisponível no modo demonstração.'); },
       async updatePassword() { throw new Error('Indisponível no modo demonstração.'); },
       async profile() { return clone(db.t.perfis[0]); },
+      async integrantesComAcesso() {
+        return db.t.integrantes.filter((i) => db.t.perfis.some((p) => p.id === i.perfil_id && p.ativo && p.papel !== 'visitante')).map((i) => i.id);
+      },
       resetAll() { localStorage.removeItem(KEY); },
 
       async list(table, { eq, order, asc, limit, inList } = {}) {

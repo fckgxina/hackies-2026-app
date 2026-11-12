@@ -11,12 +11,12 @@
     papel: () => (HK.state.profile && HK.state.profile.papel) || 'membro',
     admin: () => HK.perm.papel() === 'admin',
     editor: () => ['admin', 'editor'].includes(HK.perm.papel()),
-    /** Visitante: somente leitura de entregáveis, solicitações e documentos (RLS: e_leitor()). */
+    /** Visitante: lê tudo, menos o histórico e os perfis da equipe; não grava nada (RLS: e_leitor() sim, e_membro() não). */
     visitante: () => HK.perm.papel() === 'visitante',
     /** Pode criar registros (qualquer integrante; RLS: e_membro()). */
     membro: () => !HK.perm.visitante(),
-    own: (rec) => !!(rec && HK.state.profile && rec.criado_por === HK.state.profile.id),
-    resp: (rec, field) => !!(rec && HK.state.me && rec[field || 'responsavel_id'] === HK.state.me.id),
+    own: (rec) => HK.perm.membro() && !!(rec && HK.state.profile && rec.criado_por === HK.state.profile.id),
+    resp: (rec, field) => HK.perm.membro() && !!(rec && HK.state.me && rec[field || 'responsavel_id'] === HK.state.me.id),
     /** Pode alterar: editor/admin, quem criou, ou o responsável vinculado (quando a tabela permite). */
     canEdit: (rec, { resp = true } = {}) => HK.perm.membro() && (HK.perm.editor() || HK.perm.own(rec) || (resp && HK.perm.resp(rec))),
   };
@@ -37,10 +37,15 @@
     HK.state.perfis = perfis;
     HK.state.config = Object.fromEntries(cfg.map((c) => [c.chave, c.valor]));
     HK.state.me = ints.find((i) => HK.state.profile && i.perfil_id === HK.state.profile.id) || null;
+    // O visitante não lê os perfis da equipe (RLS); a divisão de gastos vem de uma função do banco que só devolve IDs.
+    HK.state.acessoIds = HK.perm.visitante() ? new Set(await HK.db.integrantesComAcesso()) : null;
   };
 
   /** Integrante com login ativo vinculado (usuário ativado pelo administrador). */
-  HK.temAcesso = (i) => { const p = HK.state.perfis.find((x) => x.id === i.perfil_id); return !!(p && p.ativo && p.papel !== 'visitante'); };
+  HK.temAcesso = (i) => {
+    if (HK.state.acessoIds) return HK.state.acessoIds.has(i.id);
+    const p = HK.state.perfis.find((x) => x.id === i.perfil_id); return !!(p && p.ativo && p.papel !== 'visitante');
+  };
   /** Quem divide os gastos: integrantes com acesso ativo ao sistema (e não retirados manualmente do rateio).
    *  No modo demonstração não há logins reais, então todos participam. */
   HK.integrantesRateio = () => HK.state.integrantes.map((i) => ({
@@ -107,14 +112,14 @@
   const NAV = [
     { route: '', label: 'Visão geral', icon: 'home', view: 'dashboard' },
     { route: 'solicitacoes', label: 'Solicitações', icon: 'inbox', view: 'solicitacoes' },
-    { route: 'gastos', label: 'Gastos do projeto', icon: 'wallet', view: 'gastos', equipe: true },
-    { route: 'documentos', label: 'Documentos', icon: 'file', view: 'documentos', equipe: true },
+    { route: 'gastos', label: 'Gastos do projeto', icon: 'wallet', view: 'gastos' },
+    { route: 'documentos', label: 'Documentos', icon: 'file', view: 'documentos' },
     { route: 'entregaveis', label: 'Entregáveis', icon: 'flag', view: 'entregaveis' },
     { sep: true },
     { acao: 'apresentacao', label: 'Apresentação', icon: 'slides', tag: 'Em breve' },
     { route: 'admin', label: 'Administração', icon: 'settings', view: 'admin', equipe: true },
   ];
-  /** Itens visíveis para o usuário atual (visitante não vê gastos, documentos nem administração). */
+  /** Itens visíveis para o usuário atual (visitante vê tudo em modo leitura, menos a administração). */
   const navVisivel = () => NAV.filter((n) => !(n.equipe && HK.perm.visitante()));
 
   function renderNav(active) {
@@ -264,7 +269,7 @@
       });
     } else if (HK.perm.visitante()) {
       U.$('#banner').innerHTML = `<div class="banner banner-visitante">${U.icon('info')}
-        <span><b>Acesso de visitante:</b> somente leitura das solicitações e dos entregáveis do projeto.</span></div>`;
+        <span><b>Acesso de visitante:</b> você pode ver o projeto, mas não cria nem altera nada.</span></div>`;
     }
     U.$('#logout-btn').addEventListener('click', () => HK.db.signOut().then(() => location.reload()));
     const pwd = U.$('#pwd-btn'); if (pwd) pwd.addEventListener('click', HK.changePassword);

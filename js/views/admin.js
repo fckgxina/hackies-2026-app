@@ -30,8 +30,8 @@
       <div class="section-title">O que cada papel pode fazer</div>
       <div class="table-wrap"><table class="table compact"><thead><tr><th>Ação</th><th>Visitante</th><th>Membro</th><th>Editor</th><th>Administrador</th></tr></thead><tbody>
         ${[
-          ['Consultar solicitações e entregáveis', '✓', '✓', '✓', '✓'],
-          ['Consultar gastos, documentos, comentários e histórico', '—', '✓', '✓', '✓'],
+          ['Consultar solicitações, comentários, gastos, documentos e entregáveis', '✓', '✓', '✓', '✓'],
+          ['Consultar o histórico de alterações e os demais usuários', '—', '✓', '✓', '✓'],
           ['Criar solicitações, itens, cotações, contribuições, documentos e tarefas', '—', '✓', '✓', '✓'],
           ['Editar o que criou ou o que está sob sua responsabilidade', '—', '✓', '✓', '✓'],
           ['Editar e excluir registros de qualquer pessoa', '—', '—', '✓', '✓'],

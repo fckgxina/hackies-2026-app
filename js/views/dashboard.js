@@ -7,10 +7,10 @@
 
   HK.views.dashboard = {
     async render(el, route, alive) {
-      const vis = HK.perm.visitante(); // visitante: sem gastos, documentos e histórico (RLS não libera)
+      const vis = HK.perm.visitante(); // visitante: vê tudo, menos o histórico (RLS não libera) e o vault local
       const [tickets, itens, contribs, entregaveis, documentos, hist] = await Promise.all([
-        HK.db.list('tickets'), vis ? [] : HK.db.list('itens'), vis ? [] : HK.db.list('contribuicoes'), HK.db.list('entregaveis', { order: 'prazo', asc: true }),
-        vis ? [] : HK.db.list('documentos'), vis ? [] : HK.db.list('historico', { limit: 10 }),
+        HK.db.list('tickets'), HK.db.list('itens'), HK.db.list('contribuicoes'), HK.db.list('entregaveis', { order: 'prazo', asc: true }),
+        HK.db.list('documentos'), vis ? [] : HK.db.list('historico', { limit: 10 }),
       ]);
       if (!alive()) return;
 
@@ -38,21 +38,18 @@
         </div>
 
         <h2 class="section-title">Atalhos</h2>
-        <div class="cards ${vis ? 'cols-3' : 'cols-6'}">
+        <div class="cards ${vis ? 'cols-4' : 'cols-6'}">
           <a class="shortcut" href="#/solicitacoes">${U.icon('inbox')}<span>Solicitações</span></a>
-          ${vis ? '' : `<a class="shortcut" href="#/gastos">${U.icon('wallet')}<span>Gastos</span></a>`}
-          ${vis ? '' : `<a class="shortcut" href="#/documentos">${U.icon('file')}<span>Documentos</span></a>`}
+          <a class="shortcut" href="#/gastos">${U.icon('wallet')}<span>Gastos</span></a>
+          <a class="shortcut" href="#/documentos">${U.icon('file')}<span>Documentos</span></a>
           <a class="shortcut" href="#/entregaveis">${U.icon('flag')}<span>Entregáveis</span></a>
-          <a class="shortcut" href="#" data-acao="apresentacao">${U.icon('slides')}<span>Apresentação<small>em breve · sem conteúdo</small></span></a>
-          ${vis ? '' : `<a class="shortcut" href="${U.esc(HK.obsidianHref('00 - Painel Principal'))}" title="Abre o vault no Obsidian (precisa do Obsidian instalado com o vault)">${U.icon('book')}<span>Vault Obsidian</span></a>`}
+          ${vis ? '' : `<a class="shortcut" href="#" data-acao="apresentacao">${U.icon('slides')}<span>Apresentação<small>em breve · sem conteúdo</small></span></a>
+          <a class="shortcut" href="${U.esc(HK.obsidianHref('00 - Painel Principal'))}" title="Abre o vault no Obsidian (precisa do Obsidian instalado com o vault)">${U.icon('book')}<span>Vault Obsidian</span></a>`}
         </div>
 
         <h2 class="section-title">Situação atual</h2>
         <div class="cards cols-4">
           ${U.kpi('Solicitações pendentes', String(pend.length), urg ? `<span class="overdue">${urg} urgente${urg > 1 ? 's' : ''}</span>` : 'nenhuma urgente', { icon: 'inbox', tone: urg ? 'critical' : '' })}
-          ${vis ? `${U.kpi('Solicitações concluídas', String(tickets.filter((t) => t.status === 'Concluída').length), `de ${tickets.length} registradas`, { icon: 'check' })}
-          ${U.kpi('Entregáveis', String(entregaveis.length), `${entregaveis.filter((e) => ['Concluído', 'Enviado'].includes(e.status)).length} concluído(s) ou enviado(s)`, { icon: 'flag' })}
-          ${U.kpi('Próximo prazo', prox ? U.fmtDate(prox.prazo) : '—', prox ? U.esc(prox.nome) : 'nenhum prazo em aberto', { icon: 'clock' })}` : `
           ${U.kpi('Gastos realizados', U.brl(fin.totais.realizado), `${fin.contagem.comprados} item(ns) comprado(s)`, { icon: 'wallet' })}
           ${U.kpi('Gastos planejados', U.brl(fin.totais.estimado), `estimado · a comprar ${U.brl(fin.totais.previsto)}`, { icon: 'chart' })}
           ${(() => {
@@ -63,7 +60,7 @@
             return iguais
               ? U.kpi('Cota por integrante', U.brl(Math.max(...vals)), `estimada · dividida entre ${part.length}`, { icon: 'users' })
               : U.kpi('Cota por integrante', `${U.brl(Math.min(...vals))} – ${U.brl(Math.max(...vals))}`, '<a href="#/gastos">varia: há gastos individuais</a>', { icon: 'users' });
-          })()}`}
+          })()}
         </div>
 
         <div class="cards cols-2">
@@ -75,7 +72,7 @@
           </div>
           <div class="card"><div class="card-head">${U.icon('flag')}<h3>Situação dos entregáveis</h3><a href="#/entregaveis" class="btn btn-sm btn-ghost">Abrir</a></div>
             ${entregaveis.length ? `<ul class="list">${entregaveis.map((e) => { const [ok, tot] = nTarefas(e.id); return `<li>
-              <span class="grow"><b>${U.esc(e.nome)}</b><small>${U.esc(e.etapa || '')}${e.prazo ? ` · ${U.fmtDate(e.prazo)}` : ''} · ${tot ? `${ok}/${tot} solicitações concluídas` : 'sem solicitações'}${vis ? '' : ` · ${nDocs(e.id)} doc.`}</small></span>
+              <span class="grow"><b>${U.esc(e.nome)}</b><small>${U.esc(e.etapa || '')}${e.prazo ? ` · ${U.fmtDate(e.prazo)}` : ''} · ${tot ? `${ok}/${tot} solicitações concluídas` : 'sem solicitações'} · ${nDocs(e.id)} doc.</small></span>
               ${U.chip(e.status)}</li>`; }).join('')}</ul>` : U.empty('Nenhum entregável cadastrado.')}
           </div>
         </div>
