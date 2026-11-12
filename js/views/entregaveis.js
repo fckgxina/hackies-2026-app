@@ -34,6 +34,22 @@
     });
   }
 
+  const MAX_DOCS = 5;
+  /** Título sem o prefixo repetido da categoria ("Pesquisa — Rota CA" → "Rota CA"). */
+  const docTitulo = (d) => { const p = `${d.categoria || ''} — `; return d.categoria && d.nome.startsWith(p) ? d.nome.slice(p.length) : d.nome; };
+  /** Documentos vinculados: um por linha (título, categoria · versão embaixo, status à direita). */
+  function docsHtml(docs) {
+    const head = `<div class="ent-docs-head">${U.icon('file')}<span>Documentos</span><span class="badge">${docs.length}</span></div>`;
+    if (!docs.length) return `<div class="ent-docs">${head}<p class="muted ent-docs-empty">Nenhum documento vinculado.</p></div>`;
+    const lista = [...docs].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    const resto = lista.length - MAX_DOCS;
+    return `<div class="ent-docs">${head}<ul class="list ent-doclist">${lista.slice(0, MAX_DOCS).map((d) => `<li>
+      <span class="grow"><a href="#/documentos" title="${U.esc(d.nome)}">${U.esc(docTitulo(d))}</a>
+        <small>${U.esc(d.categoria || 'Sem categoria')}${d.versao_atual ? ` · ${U.esc(d.versao_atual)}` : ''}</small></span>
+      ${U.chip(d.status)}</li>`).join('')}</ul>
+      ${resto > 0 ? `<a class="ent-docs-more" href="#/documentos">e mais ${resto} documento${resto > 1 ? 's' : ''}</a>` : ''}</div>`;
+  }
+
   function draw(el) {
     const prazoTxt = (iso, done) => { if (!iso) return '—'; const n = U.daysUntil(iso); return `${U.fmtDate(iso)}${done ? '' : ` <small class="${n < 0 ? 'overdue' : n <= 3 ? 'soon' : 'muted'}">${U.prazoLabel(iso)}</small>`}`; };
     el.innerHTML = `
@@ -55,7 +71,7 @@
           <div class="entregavel-foot">
             <div style="font-size:12.5px;margin-bottom:var(--s2)">Solicitações: <b>${abertas}</b> aberta(s) · <b>${feitas}</b> concluída(s) de ${ts.length}</div>
             ${U.progress(ts.length ? (feitas / ts.length) * 100 : 0, ts.length && feitas === ts.length ? 'good' : '')}
-            <div style="font-size:12.5px;margin-top:var(--s3)">Documentos: ${docs.length ? docs.map((d) => `<a href="#/documentos">${U.esc(d.nome)}</a> ${U.chip(d.status)}`).join(' ') : '<span class="muted">nenhum vinculado</span>'}</div>
+            ${docsHtml(docs)}
             <div class="inline-row" style="margin-top:var(--s4)">
               ${HK.perm.membro() ? `<a class="btn btn-sm" href="#/solicitacoes?novo=1&entregavel=${e.id}">${U.icon('plus')} Solicitar tarefa</a>` : ''}
               ${ts.length ? `<a class="btn btn-sm btn-ghost" href="#/solicitacoes?entregavel=${e.id}">Ver solicitações</a>` : ''}</div>

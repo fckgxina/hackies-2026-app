@@ -210,6 +210,17 @@ input[readonly] { background: var(--surface-2); color: var(--text-2); }
 /* Card de entregável: rodapé (andamento + ações) sempre no pé, alinhado entre os cards. */
 .card.entregavel { display: flex; flex-direction: column; }
 .entregavel-foot { margin-top: auto; padding-top: var(--s3); border-top: 1px solid var(--border); }
+/* Documentos vinculados ao entregável: lista compacta, um por linha. */
+.ent-docs { margin-top: var(--s4); }
+.ent-docs-head { display: flex; align-items: center; gap: var(--s2); font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.ent-docs-head .ic { width: 15px; height: 15px; color: var(--text-3); }
+.ent-docs-empty { margin: var(--s2) 0 0; font-size: 12.5px; }
+.ent-doclist { margin-top: var(--s1); }
+.ent-doclist li { padding: var(--s2) 0; }
+/* Título pode usar até 2 linhas (nomes técnicos longos); o nome completo fica no title. */
+.ent-doclist .grow > a { font-size: 13px; font-weight: 600; line-height: 1.35; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.ent-doclist small { font-size: 11.5px; }
+.ent-docs-more { display: inline-block; margin-top: var(--s1); font-size: 12.5px; }
 
 /* ---------- grade de cards (PADRÃO — ver DESIGN.md) ----------
    Uso: <div class="cards cols-N"> com N = 2, 3, 4 ou 6.
