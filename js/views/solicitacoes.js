@@ -134,15 +134,15 @@
           <div><dt>Registrada por</dt><dd>${U.esc(HK.perfilNome(t.criado_por))}</dd></div>
           ${obs ? `<div><dt>Tópico no Obsidian</dt><dd><a href="${U.esc(obs)}">${U.icon('external')} Abrir no Obsidian</a></dd></div>` : ''}
         </dl>
-        ${editavel ? '' : '<div class="notice" style="margin-bottom:var(--s3)">Somente leitura: apenas quem registrou, o responsável vinculado ou um editor pode alterar.</div>'}
+        ${editavel ? '' : `<div class="notice" style="margin-bottom:var(--s3)">${HK.perm.visitante() ? 'Somente leitura (acesso de visitante).' : 'Somente leitura: apenas quem registrou, o responsável vinculado ou um editor pode alterar.'}</div>`}
         ${formHTML(t, editavel)}
         <div class="section-title">Comentários (${coms.length})</div>
         <div class="comments">${coms.map((c) => `<div class="comment"><div class="comment-head"><b>${U.esc(HK.perfilNome(c.autor_id))}</b>
             <span>${U.fmtDateTime(c.criado_em)}${HK.perm.admin() || c.autor_id === HK.state.profile.id ? ` · <a href="#" data-delc="${c.id}">excluir</a>` : ''}</span></div>
             <p>${U.esc(c.texto)}</p></div>`).join('') || '<p class="muted">Nenhum comentário.</p>'}</div>
-        <form class="comment-form" style="display:flex;gap:var(--s2);margin-top:var(--s3);align-items:flex-end">
+        ${HK.perm.membro() ? `<form class="comment-form" style="display:flex;gap:var(--s2);margin-top:var(--s3);align-items:flex-end">
           <label class="field" style="flex:1"><span class="sr-only">Novo comentário</span><textarea name="texto" rows="2" placeholder="Escreva um comentário…"></textarea></label>
-          <button class="btn" type="submit">${U.icon('message')} Comentar</button></form>
+          <button class="btn" type="submit">${U.icon('message')} Comentar</button></form>` : ''}
         <div class="section-title">Histórico desta solicitação</div>
         <ul class="timeline">${hist.map((h) => { const x = HK.histTexto(h); return `<li>${U.icon('history')}<div><b>${U.esc(x.quem)}</b> ${U.esc(x.texto.split(' "')[0])}${x.detalhe ? `<small>${U.esc(x.detalhe)}</small>` : ''}<small>${U.fmtDateTime(h.em)}</small></div></li>`; }).join('') || '<li class="muted">Sem registros.</li>'}</ul>`,
       footer: `${HK.perm.admin() ? `<button class="btn btn-ghost left" data-del>${U.icon('trash')} Excluir</button>` : ''}
@@ -165,7 +165,8 @@
       if (!(await U.confirm('Tickets não devem ser apagados — prefira "Não realizada". Excluir mesmo assim? (Fica registrado no histórico e pode ser restaurado.)', { danger: true, okLabel: 'Excluir' }))) return;
       try { await HK.db.remove('tickets', t.id); m.close(); U.toast('Solicitação excluída.'); HK.refresh(); } catch (e) { U.toast(U.errMsg(e), 'error'); }
     });
-    m.el.querySelector('.comment-form').addEventListener('submit', async (e) => {
+    const cf = m.el.querySelector('.comment-form');
+    if (cf) cf.addEventListener('submit', async (e) => {
       e.preventDefault();
       const txt = e.target.texto.value.trim();
       if (!txt) return;
@@ -223,7 +224,7 @@
         ${U.kpi('Urgentes em aberto', String(urgentes), urgentes ? 'precisam de atenção' : '', { tone: urgentes ? 'critical' : '' })}
       </div>
       <div class="toolbar">
-        <button class="btn btn-primary" id="tk-new">${U.icon('plus')} Nova solicitação</button>
+        ${HK.perm.membro() ? `<button class="btn btn-primary" id="tk-new">${U.icon('plus')} Nova solicitação</button>` : ''}
         <div class="filters">
           <input type="search" id="tk-q" placeholder="Buscar…" value="${U.esc(f.q)}" aria-label="Buscar">
           <select data-f="categoria" aria-label="Categoria">${U.opts(CATEGORIAS, f.categoria, { empty: 'Categoria: todas' })}</select>
@@ -244,13 +245,13 @@
         m === 'kanban' ? `<div class="kanban">${STATUS.map((s) => { const cs = list.filter((t) => t.status === s).sort((a, b) => PRIO_ORD[a.prioridade] - PRIO_ORD[b.prioridade] || b.criado_em.localeCompare(a.criado_em)); return `
           <section class="kcol" data-status="${s}" aria-label="${COLS[s]}"><div class="kcol-head">${U.chip(s)}<span class="sr-only">${COLS[s]}</span><span class="badge">${cs.length}</span></div>
           <div class="kcol-body">${cs.map(card).join('') || '<p class="muted" style="font-size:12px;padding:var(--s1)">—</p>'}</div></section>`; }).join('')}</div>
-          <p class="muted" style="font-size:12px;margin-top:var(--s2)">Arraste um cartão para mudar o status (no celular, abra o cartão e altere o campo Status). Concluir exige o resumo da solução.</p>`
+          ${HK.perm.membro() ? '<p class="muted" style="font-size:12px;margin-top:var(--s2)">Arraste um cartão para mudar o status (no celular, abra o cartão e altere o campo Status). Concluir exige o resumo da solução.</p>' : ''}`
         : `<div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Título</th><th>Categoria</th><th>Solicitante</th><th>Prioridade</th><th>Status</th><th>Criada</th><th>Prazo</th></tr></thead>
           <tbody>${list.map((t) => `<tr data-open="${t.id}" style="cursor:pointer"><td class="kcard-id">${HK.ticketId(t.numero)}</td><td class="title-cell"><b>${U.esc(t.titulo)}</b><small>${U.esc(t.area || '')}</small></td>
             <td>${U.esc(t.categoria)}</td><td>${U.esc(HK.nome(t.solicitante_id))}</td><td>${U.chip(t.prioridade)}</td><td>${U.chip(t.status)}</td>
             <td class="nowrap">${U.fmtDate(U.isoFromTimestamp(t.criado_em))}</td><td class="nowrap">${t.prazo ? U.fmtDate(t.prazo) : '—'}</td></tr>`).join('')}</tbody></table></div>`}`;
 
-    el.querySelector('#tk-new').addEventListener('click', novo);
+    const nb = el.querySelector('#tk-new'); if (nb) nb.addEventListener('click', novo);
     el.querySelector('#tk-csv').addEventListener('click', () => exportar(list));
     el.querySelector('#tk-q').addEventListener('input', U.debounce((e) => { st.filtros.q = e.target.value; draw(el); const q = el.querySelector('#tk-q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }, 250));
     el.querySelectorAll('[data-f]').forEach((s) => s.addEventListener('change', () => { st.filtros[s.dataset.f] = s.value; draw(el); }));
@@ -282,7 +283,7 @@
       if (!alive()) return;
       draw(el);
       if (route.params.entregavel && !route.params.novo) { st.filtros.entregavel = route.params.entregavel; history.replaceState(null, '', '#/solicitacoes'); draw(el); }
-      if (route.params.novo) { history.replaceState(null, '', '#/solicitacoes'); novo({ categoria: 'Tarefa', entregavel_id: route.params.entregavel || '' }); }
+      if (route.params.novo && HK.perm.membro()) { history.replaceState(null, '', '#/solicitacoes'); novo({ categoria: 'Tarefa', entregavel_id: route.params.entregavel || '' }); }
       if (route.params.t) { history.replaceState(null, '', '#/solicitacoes'); detalhe(route.params.t); }
     },
   };

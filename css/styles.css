@@ -134,6 +134,7 @@ small { font-size: 12px; }
 /* ---------- banner ---------- */
 .banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 9px 24px; font-size: 13px; border-bottom: 1px solid var(--border); }
 .banner-demo { background: var(--warning-soft); color: var(--warning-ink); }
+.banner-visitante { background: var(--info-soft); color: var(--info-ink); }
 .banner .ic { width: 16px; height: 16px; }
 .banner button { font-size: 12.5px; }
 

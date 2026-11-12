@@ -104,13 +104,16 @@ Os testes ficam em [`tests/finance.test.js`](tests/finance.test.js) e rodam com 
 
 ## 5. Permissões
 
-| Ação | Membro | Editor | Admin |
-|---|:-:|:-:|:-:|
-| Consultar tudo (exceto documentos restritos) | ✓ | ✓ | ✓ |
-| Criar solicitações, itens, cotações, contribuições, documentos, tarefas | ✓ | ✓ | ✓ |
-| Editar o que criou ou o que está sob sua responsabilidade | ✓ | ✓ | ✓ |
-| Editar e excluir registros de qualquer pessoa; editar categorias; documentos restritos | | ✓ | ✓ |
-| Excluir tickets e entregáveis; usuários, integrantes, orçamento, restauração, backup | | | ✓ |
+| Ação | Visitante | Membro | Editor | Admin |
+|---|:-:|:-:|:-:|:-:|
+| Consultar solicitações (sem comentários) e entregáveis | ✓ | ✓ | ✓ | ✓ |
+| Consultar gastos, documentos, comentários e histórico (exceto documentos restritos) | | ✓ | ✓ | ✓ |
+| Criar solicitações, itens, cotações, contribuições, documentos, tarefas | | ✓ | ✓ | ✓ |
+| Editar o que criou ou o que está sob sua responsabilidade | | ✓ | ✓ | ✓ |
+| Editar e excluir registros de qualquer pessoa; editar categorias; documentos restritos | | | ✓ | ✓ |
+| Excluir tickets e entregáveis; usuários, integrantes, orçamento, restauração, backup | | | | ✓ |
+
+**Visitante** (papel criado em 12/11/2026, migração `supabase/migracao-2026-11-12-visitante.sql`): conta só de leitura, sem integrante vinculado e fora da divisão de gastos. Não grava nada — o banco recusa qualquer inserção ou alteração. Para criar um visitante: Authentication → Users → Add user e, em Administração, marque o papel "Visitante" e ative.
 
 As regras ficam no banco (RLS em `schema.sql`) e a interface só as reflete. Todas as alterações são gravadas automaticamente na tabela `historico`, com o usuário, a data e os valores antes e depois.
 

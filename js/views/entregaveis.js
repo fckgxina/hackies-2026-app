@@ -55,9 +55,9 @@
           <div class="entregavel-foot">
             <div style="font-size:12.5px;margin-bottom:var(--s2)">Solicitações: <b>${abertas}</b> aberta(s) · <b>${feitas}</b> concluída(s) de ${ts.length}</div>
             ${U.progress(ts.length ? (feitas / ts.length) * 100 : 0, ts.length && feitas === ts.length ? 'good' : '')}
-            <div style="font-size:12.5px;margin-top:var(--s3)">Documentos: ${docs.length ? docs.map((d) => `<a href="#/documentos">${U.esc(d.nome)}</a> ${U.chip(d.status)}`).join(' ') : '<span class="muted">nenhum vinculado</span>'}</div>
+            ${HK.perm.visitante() ? '' : `<div style="font-size:12.5px;margin-top:var(--s3)">Documentos: ${docs.length ? docs.map((d) => `<a href="#/documentos">${U.esc(d.nome)}</a> ${U.chip(d.status)}`).join(' ') : '<span class="muted">nenhum vinculado</span>'}</div>`}
             <div class="inline-row" style="margin-top:var(--s4)">
-              <a class="btn btn-sm" href="#/solicitacoes?novo=1&entregavel=${e.id}">${U.icon('plus')} Solicitar tarefa</a>
+              ${HK.perm.membro() ? `<a class="btn btn-sm" href="#/solicitacoes?novo=1&entregavel=${e.id}">${U.icon('plus')} Solicitar tarefa</a>` : ''}
               ${ts.length ? `<a class="btn btn-sm btn-ghost" href="#/solicitacoes?entregavel=${e.id}">Ver solicitações</a>` : ''}</div>
           </div></div>`; }).join('')}</div>` : U.empty('Nenhum entregável cadastrado.')}`;
 

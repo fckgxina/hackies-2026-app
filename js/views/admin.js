@@ -23,22 +23,23 @@
           <td>${U.esc(p.email)}</td>
           <td><select data-papel="${p.id}" ${dis} aria-label="Papel">${U.opts(Object.keys(HK.PAPEIS), p.papel, { label: (k) => HK.PAPEIS[k] })}</select></td>
           <td><label class="check"><input type="checkbox" data-ativo="${p.id}" ${p.ativo ? 'checked' : ''} ${dis}> ${p.ativo ? 'ativo' : 'inativo'}</label></td>
-          <td><select data-vinc="${p.id}" ${adm ? '' : 'disabled'} aria-label="Integrante vinculado">${U.opts(HK.state.integrantes, v ? v.id : '', { empty: '— nenhum —' })}</select></td></tr>`; }).join('')}
+          <td>${p.papel === 'visitante' ? '<span class="muted">não se aplica (visitante)</span>' : `<select data-vinc="${p.id}" ${adm ? '' : 'disabled'} aria-label="Integrante vinculado">${U.opts(HK.state.integrantes, v ? v.id : '', { empty: '— nenhum —' })}</select>`}</td></tr>`; }).join('')}
       </tbody></table></div>
       <p class="muted" style="font-size:12px;margin-top:var(--s2)">Novos usuários são criados no painel do Supabase (Authentication → Users → Add user) e entram <b>inativos</b> até serem ativados aqui. O vínculo com o integrante define o "responsável" de cada usuário (permite atualizar o que foi atribuído a ele).</p>
 
       <div class="section-title">O que cada papel pode fazer</div>
-      <div class="table-wrap"><table class="table compact"><thead><tr><th>Ação</th><th>Membro</th><th>Editor</th><th>Administrador</th></tr></thead><tbody>
+      <div class="table-wrap"><table class="table compact"><thead><tr><th>Ação</th><th>Visitante</th><th>Membro</th><th>Editor</th><th>Administrador</th></tr></thead><tbody>
         ${[
-          ['Consultar solicitações, gastos, entregáveis e histórico', '✓', '✓', '✓'],
-          ['Criar solicitações, itens, cotações, contribuições, documentos e tarefas', '✓', '✓', '✓'],
-          ['Editar o que criou ou o que está sob sua responsabilidade', '✓', '✓', '✓'],
-          ['Editar e excluir registros de qualquer pessoa', '—', '✓', '✓'],
-          ['Editar categorias de gastos', '—', '✓', '✓'],
-          ['Ver e marcar documentos restritos', '—', '✓', '✓'],
-          ['Excluir solicitações (tickets) e entregáveis', '—', '—', '✓'],
-          ['Usuários, papéis, integrantes, orçamento, restauração e backup', '—', '—', '✓'],
-        ].map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
+          ['Consultar solicitações e entregáveis', '✓', '✓', '✓', '✓'],
+          ['Consultar gastos, documentos, comentários e histórico', '—', '✓', '✓', '✓'],
+          ['Criar solicitações, itens, cotações, contribuições, documentos e tarefas', '—', '✓', '✓', '✓'],
+          ['Editar o que criou ou o que está sob sua responsabilidade', '—', '✓', '✓', '✓'],
+          ['Editar e excluir registros de qualquer pessoa', '—', '—', '✓', '✓'],
+          ['Editar categorias de gastos', '—', '—', '✓', '✓'],
+          ['Ver e marcar documentos restritos', '—', '—', '✓', '✓'],
+          ['Excluir solicitações (tickets) e entregáveis', '—', '—', '—', '✓'],
+          ['Usuários, papéis, integrantes, orçamento, restauração e backup', '—', '—', '—', '✓'],
+        ].map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('')}
       </tbody></table></div>
       <p class="muted" style="font-size:12px;margin-top:var(--s2)">Estas regras são aplicadas pelo banco de dados (RLS), não apenas pela interface.</p>`);
 

@@ -126,18 +126,18 @@
               <button class="btn btn-sm" data-baixar="${v.id}">${U.icon('download')} Baixar</button>` : v.link ? `<a class="btn btn-sm" href="${U.esc(v.link)}" target="_blank" rel="noopener noreferrer">${U.icon('external')} Abrir</a>` : ''}
               ${HK.perm.editor() ? `<button class="btn-icon danger" data-vdel="${v.id}" aria-label="Excluir versão">${U.icon('trash')}</button>` : ''}</td></tr>`).join('')}
         </tbody></table></div>` : U.empty('Nenhum arquivo anexado ainda.')}
-        <div class="section-title">Anexar nova versão</div>
+        ${HK.perm.membro() ? `<div class="section-title">Anexar nova versão</div>
         <form class="form" novalidate>
           ${U.field('Versão', `<input type="text" name="versao" required value="${U.esc(proxVersao(doc.versao_atual))}">`, { req: true, hint: 'V0.1 primeira elaboração · V0.2 revisão · V1.0 final · V1.1 ajuste posterior.' })}
           ${U.field('Arquivo', '<input type="file" name="arquivo">', { hint: 'Até 25 MB. Ou informe um link abaixo.' })}
           ${U.field('Link (alternativa ao arquivo)', '<input type="url" name="link" placeholder="https://…">', { full: true })}
-          ${U.field('Notas da versão', '<textarea name="notas" rows="2"></textarea>', { full: true })}</form>`,
-      footer: '<button class="btn" data-close>Fechar</button><button class="btn btn-primary" data-submit>' + U.icon('upload') + ' Anexar versão</button>',
+          ${U.field('Notas da versão', '<textarea name="notas" rows="2"></textarea>', { full: true })}</form>` : ''}`,
+      footer: '<button class="btn" data-close>Fechar</button>' + (HK.perm.membro() ? '<button class="btn btn-primary" data-submit>' + U.icon('upload') + ' Anexar versão</button>' : ''),
     });
     const form = m.el.querySelector('form');
     m.el.querySelectorAll('[data-ver]').forEach((b) => b.addEventListener('click', () => abrirArquivo(vs.find((x) => x.id === b.dataset.ver), false)));
     m.el.querySelectorAll('[data-baixar]').forEach((b) => b.addEventListener('click', () => abrirArquivo(vs.find((x) => x.id === b.dataset.baixar), true)));
-    U.bindForm(m, async (v) => {
+    if (form) U.bindForm(m, async (v) => {
       await anexar(doc, { file: form.arquivo.files[0], versao: v.versao, link: v.link, notas: v.notas });
       U.toast(`Versão ${v.versao} anexada.`);
       await load(); m.close(); versoes(doc.id); HK.refresh();
@@ -226,10 +226,10 @@
       <div class="cat-bar" role="tablist" aria-label="Categorias de documentos">
         <button role="tab" data-cat="" class="${!st.categoria ? 'on' : ''}" aria-selected="${!st.categoria}">Todos <span class="badge">${D.docs.length}</span></button>
         ${cats().map((c) => `<button role="tab" data-cat="${U.esc(c)}" class="${st.categoria === c ? 'on' : ''}" aria-selected="${st.categoria === c}">${U.esc(c)} <span class="badge">${D.docs.filter((d) => d.categoria === c).length}</span></button>`).join('')}
-        <button class="cat-manage" data-gerenciar title="Criar, renomear ou excluir categorias">${U.icon('settings')} Categorias</button>
+        ${HK.perm.membro() ? `<button class="cat-manage" data-gerenciar title="Criar, renomear ou excluir categorias">${U.icon('settings')} Categorias</button>` : ''}
       </div>
       <div class="toolbar">
-        <button class="btn btn-primary" id="d-new">${U.icon('plus')} ${st.categoria ? `Novo em ${U.esc(st.categoria)}` : 'Novo documento'}</button>
+        ${HK.perm.membro() ? `<button class="btn btn-primary" id="d-new">${U.icon('plus')} ${st.categoria ? `Novo em ${U.esc(st.categoria)}` : 'Novo documento'}</button>` : ''}
         <div class="filters">
           <input type="search" id="d-q" placeholder="Buscar…" value="${U.esc(st.q)}" aria-label="Buscar">
           <select data-f="status" aria-label="Status">${U.opts(STATUS, st.status, { empty: 'Status: todos' })}</select>
@@ -246,7 +246,7 @@
             <td>${uv && uv.arquivo_path ? `<div class="file-cell"><span class="title-cell"><b title="${U.esc(uv.arquivo_nome)}">${U.esc(uv.versao)} · ${U.esc(uv.arquivo_nome || 'arquivo')}</b><small>${U.fileSize(uv.arquivo_tamanho)} · ${U.fmtDate(U.isoFromTimestamp(uv.criado_em))}</small></span>
                 <span class="file-actions"><button class="btn btn-sm" data-doc-ver="${uv.id}" title="${ehVisualizavel(uv.arquivo_nome) ? 'Abrir no navegador' : 'Este formato pode ser baixado em vez de exibido'}">${U.icon('external')} Visualizar</button><button class="btn btn-sm" data-doc-baixar="${uv.id}">${U.icon('download')} Baixar</button></span></div>`
               : uv && uv.link ? `<a class="btn btn-sm" href="${U.esc(uv.link)}" target="_blank" rel="noopener noreferrer">${U.icon('external')} Abrir link (${U.esc(uv.versao)})</a>`
-              : `<button class="btn btn-sm" data-anexar="${d.id}">${U.icon('upload')} Anexar</button>`}</td>
+              : HK.perm.membro() ? `<button class="btn btn-sm" data-anexar="${d.id}">${U.icon('upload')} Anexar</button>` : '<span class="muted">—</span>'}</td>
             <td>${U.esc(d.responsavel_id ? HK.nome(d.responsavel_id) : '—')}</td>
             <td class="nowrap">${d.prazo ? `${U.fmtDate(d.prazo)}${done ? '' : `<br><small class="${n < 0 ? 'overdue' : n <= 3 ? 'soon' : 'muted'}">${U.prazoLabel(d.prazo)}</small>`}` : '—'}</td>
             <td>${U.chip(d.status)}${d.data_envio ? `<br><small class="muted">enviado ${U.fmtDate(d.data_envio)}</small>` : ''}</td>
@@ -254,11 +254,11 @@
             <td class="actions"><button class="btn btn-sm" data-arquivos="${d.id}" title="Todas as versões e anexar nova">${U.icon('file')} Versões ${nv(d.id)}</button>
               ${HK.perm.canEdit(d) ? `<button class="btn-icon" data-edit="${d.id}" aria-label="Editar">${U.icon('edit')}</button>` : ''}
               ${HK.perm.editor() ? `<button class="btn-icon danger" data-del="${d.id}" aria-label="Excluir">${U.icon('trash')}</button>` : ''}</td></tr>`; }).join('')}
-        </tbody></table></div>` : U.empty(q || st.status || st.responsavel ? 'Nenhum documento desta categoria corresponde aos filtros.' : `Nenhum documento em "${c}" ainda.`, `<button class="btn" data-novo-cat="${U.esc(c)}">${U.icon('plus')} Adicionar documento</button>`)}`; }).join('') || (list.length ? '' : U.empty('Nenhum documento corresponde aos filtros.'))}`;
+        </tbody></table></div>` : U.empty(q || st.status || st.responsavel ? 'Nenhum documento desta categoria corresponde aos filtros.' : `Nenhum documento em "${c}" ainda.`, HK.perm.membro() ? `<button class="btn" data-novo-cat="${U.esc(c)}">${U.icon('plus')} Adicionar documento</button>` : '')}`; }).join('') || (list.length ? '' : U.empty('Nenhum documento corresponde aos filtros.'))}`;
 
-    el.querySelector('#d-new').addEventListener('click', () => docForm(null));
+    const dn = el.querySelector('#d-new'); if (dn) dn.addEventListener('click', () => docForm(null));
     el.querySelectorAll('[data-cat]').forEach((b) => b.addEventListener('click', () => { st.categoria = b.dataset.cat; draw(el); }));
-    el.querySelector('[data-gerenciar]').addEventListener('click', () => gerenciarCategorias());
+    const gc = el.querySelector('[data-gerenciar]'); if (gc) gc.addEventListener('click', () => gerenciarCategorias());
     el.querySelectorAll('[data-novo-cat]').forEach((b) => b.addEventListener('click', () => docForm(null)));
     el.querySelector('#d-csv').addEventListener('click', () => exportar(list));
     el.querySelector('#d-q').addEventListener('input', U.debounce((e) => { st.q = e.target.value; draw(el); const x = el.querySelector('#d-q'); x.focus(); x.setSelectionRange(x.value.length, x.value.length); }, 250));

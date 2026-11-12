@@ -11,12 +11,16 @@
     papel: () => (HK.state.profile && HK.state.profile.papel) || 'membro',
     admin: () => HK.perm.papel() === 'admin',
     editor: () => ['admin', 'editor'].includes(HK.perm.papel()),
+    /** Visitante: somente leitura de entregáveis, solicitações e documentos (RLS: e_leitor()). */
+    visitante: () => HK.perm.papel() === 'visitante',
+    /** Pode criar registros (qualquer integrante; RLS: e_membro()). */
+    membro: () => !HK.perm.visitante(),
     own: (rec) => !!(rec && HK.state.profile && rec.criado_por === HK.state.profile.id),
     resp: (rec, field) => !!(rec && HK.state.me && rec[field || 'responsavel_id'] === HK.state.me.id),
     /** Pode alterar: editor/admin, quem criou, ou o responsável vinculado (quando a tabela permite). */
-    canEdit: (rec, { resp = true } = {}) => HK.perm.editor() || HK.perm.own(rec) || (resp && HK.perm.resp(rec)),
+    canEdit: (rec, { resp = true } = {}) => HK.perm.membro() && (HK.perm.editor() || HK.perm.own(rec) || (resp && HK.perm.resp(rec))),
   };
-  HK.PAPEIS = { admin: 'Administrador', editor: 'Editor', membro: 'Membro' };
+  HK.PAPEIS = { admin: 'Administrador', editor: 'Editor', membro: 'Membro', visitante: 'Visitante (somente leitura)' };
 
   /* ---------- referências compartilhadas ---------- */
   HK.nome = (id) => (HK.state.integrantes.find((i) => i.id === id) || {}).nome || '—';
@@ -36,7 +40,7 @@
   };
 
   /** Integrante com login ativo vinculado (usuário ativado pelo administrador). */
-  HK.temAcesso = (i) => { const p = HK.state.perfis.find((x) => x.id === i.perfil_id); return !!(p && p.ativo); };
+  HK.temAcesso = (i) => { const p = HK.state.perfis.find((x) => x.id === i.perfil_id); return !!(p && p.ativo && p.papel !== 'visitante'); };
   /** Quem divide os gastos: integrantes com acesso ativo ao sistema (e não retirados manualmente do rateio).
    *  No modo demonstração não há logins reais, então todos participam. */
   HK.integrantesRateio = () => HK.state.integrantes.map((i) => ({
@@ -103,16 +107,18 @@
   const NAV = [
     { route: '', label: 'Visão geral', icon: 'home', view: 'dashboard' },
     { route: 'solicitacoes', label: 'Solicitações', icon: 'inbox', view: 'solicitacoes' },
-    { route: 'gastos', label: 'Gastos do projeto', icon: 'wallet', view: 'gastos' },
-    { route: 'documentos', label: 'Documentos', icon: 'file', view: 'documentos' },
+    { route: 'gastos', label: 'Gastos do projeto', icon: 'wallet', view: 'gastos', equipe: true },
+    { route: 'documentos', label: 'Documentos', icon: 'file', view: 'documentos', equipe: true },
     { route: 'entregaveis', label: 'Entregáveis', icon: 'flag', view: 'entregaveis' },
     { sep: true },
     { acao: 'apresentacao', label: 'Apresentação', icon: 'slides', tag: 'Em breve' },
-    { route: 'admin', label: 'Administração', icon: 'settings', view: 'admin' },
+    { route: 'admin', label: 'Administração', icon: 'settings', view: 'admin', equipe: true },
   ];
+  /** Itens visíveis para o usuário atual (visitante não vê gastos, documentos nem administração). */
+  const navVisivel = () => NAV.filter((n) => !(n.equipe && HK.perm.visitante()));
 
   function renderNav(active) {
-    U.$('#nav').innerHTML = NAV.map((n) => {
+    U.$('#nav').innerHTML = navVisivel().map((n) => {
       if (n.sep) return '<div class="nav-sep"></div>';
       if (n.acao) return `<a href="#" data-acao="${n.acao}">${U.icon(n.icon)}<span>${n.label}</span>${n.tag ? `<span class="tag nav-tag">${n.tag}</span>` : ''}</a>`;
       if (n.external) return `<a href="${n.href}" target="_blank" rel="noopener">${U.icon(n.icon)}<span>${n.label}</span>${U.icon('external', 'muted')}</a>`;
@@ -131,7 +137,7 @@
   let renderSeq = 0;
   HK.render = async () => {
     const r = HK.parseRoute();
-    const item = NAV.find((n) => !n.sep && !n.external && !n.acao && n.route === r.name) || NAV[0];
+    const item = navVisivel().find((n) => !n.sep && !n.external && !n.acao && n.route === r.name) || NAV[0];
     const view = HK.views[item.view];
     renderNav(item.route);
     U.$('#page-title').textContent = item.label;
@@ -241,7 +247,7 @@
     U.$('#menu-btn').innerHTML = U.icon('menu');
     U.$('#userbox').innerHTML = `
       <div class="userchip"><span class="avatar">${U.esc(ini)}</span>
-        <span class="who"><b>${U.esc(p.nome || p.email)}</b><small>${HK.PAPEIS[p.papel] || p.papel}${HK.state.me ? '' : ' · sem integrante vinculado'}</small></span></div>
+        <span class="who"><b>${U.esc(p.nome || p.email)}</b><small>${HK.PAPEIS[p.papel] || p.papel}${HK.state.me || HK.perm.visitante() ? '' : ' · sem integrante vinculado'}</small></span></div>
       ${HK.db.mode === 'supabase' ? `<button class="btn-icon" id="pwd-btn" title="Alterar senha" aria-label="Alterar senha">${U.icon('key')}</button>` : ''}
       <button class="btn-icon" id="logout-btn" title="Sair" aria-label="Sair">${U.icon('logout')}</button>`;
     U.$('#sidebar-foot').innerHTML = HK.db.mode === 'demo'
@@ -256,6 +262,9 @@
       U.$('#demo-reset').addEventListener('click', async () => {
         if (await U.confirm('Apagar todos os dados do modo demonstração neste navegador?', { danger: true, okLabel: 'Apagar' })) { HK.db.resetAll(); location.reload(); }
       });
+    } else if (HK.perm.visitante()) {
+      U.$('#banner').innerHTML = `<div class="banner banner-visitante">${U.icon('info')}
+        <span><b>Acesso de visitante:</b> somente leitura das solicitações e dos entregáveis do projeto.</span></div>`;
     }
     U.$('#logout-btn').addEventListener('click', () => HK.db.signOut().then(() => location.reload()));
     const pwd = U.$('#pwd-btn'); if (pwd) pwd.addEventListener('click', HK.changePassword);
