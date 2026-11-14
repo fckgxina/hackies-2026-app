@@ -19,7 +19,7 @@
       let instancia = null;
       HK.onLeave(() => { if (instancia) instancia.destruir(); instancia = null; });
       try {
-        const url = new URL('js/viewer3d/visualizador.js', document.baseURI).href;
+        const url = new URL('js/viewer3d/visualizador.js?v=20261114b', document.baseURI).href;
         const mod = await import(url);
         if (!alive()) return;
         instancia = await mod.montarVisualizador(alvo, { base: BASE });
