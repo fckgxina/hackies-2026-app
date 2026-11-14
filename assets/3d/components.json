@@ -1,0 +1,158 @@
+{
+  "versao": "1.0",
+  "data": "2026-11-14",
+  "modelo": "garrafa-alimentacao.glb",
+  "origem_valores": "Proposta técnica D02 v1.0 (LaTeX), seção 6 — mesmos valores do dimensionamento. [E] = estimativa da equipe; [F] = documentação do fabricante.",
+  "aviso": "Modelo conceitual. Módulos BCM e DCM com dimensões externas do fabricante; garrafa, estrutura, proteção, barramentos e conectores são ilustrativos (dimensões hipotéticas). Não representa a construção interna dos equipamentos nem confirma que a montagem cabe numa garrafa real.",
+  "grupos": {
+    "carcaca": {
+      "nome": "Garrafa de alimentação (carcaça)", "fabricante": "—", "modelo": "Conceitual (sem projeto mecânico)", "quantidade": 1,
+      "categoria": "Invólucro", "estagio": "Estrutura", "natureza": "ilustrativo",
+      "caracteristicas": [["Dimensões no modelo", "Ø interno 180 mm · parede 8 mm · 380 mm (hipótese)"], ["Função térmica", "Recebe o calor da placa fria por condução"]],
+      "funcao": "Envolve e protege a eletrônica no ambiente submarino. No modelo é dividida em duas metades para permitir ver o interior.",
+      "motivo": "O guia do desafio define a garrafa de alimentação como o invólucro do conversor.",
+      "limitacoes": "Dimensões, material e classe de pressão não foram informados pela BRS; a geometria é apenas ilustrativa.",
+      "docs": []
+    },
+    "tampa": {
+      "nome": "Tampa da garrafa", "fabricante": "—", "modelo": "Conceitual", "quantidade": 2,
+      "categoria": "Invólucro", "estagio": "Estrutura", "natureza": "ilustrativo",
+      "caracteristicas": [["Dimensões no modelo", "Ø 220 mm · 22 mm (hipótese)"]],
+      "funcao": "Fecha as extremidades da garrafa e recebe os conectores de passagem (entrada e saída).",
+      "motivo": "Representação mínima do invólucro.", "limitacoes": "Sem projeto de vedação ou de pressão.", "docs": []
+    },
+    "conector_entrada": {
+      "nome": "Conector de entrada (600 V CC)", "fabricante": "—", "modelo": "Conceitual (penetrador)", "quantidade": 1,
+      "categoria": "Conexão", "estagio": "1. Entrada", "natureza": "ilustrativo",
+      "caracteristicas": [["Tensão", "≈ 600 V CC (requisito do desafio)"], ["Corrente", "≈ 2,82 A [E]"], ["Potência", "≈ 1.690 W [E]"]],
+      "funcao": "Ponto onde o barramento de 600 V CC do ROV entra na garrafa.",
+      "motivo": "Indica a origem do fluxo de energia.", "limitacoes": "Modelo e especificação do penetrador não definidos.", "docs": []
+    },
+    "protecao": {
+      "nome": "Proteção e filtro de entrada", "fabricante": "—", "modelo": "Bloco conceitual", "quantidade": 1,
+      "categoria": "Proteção", "estagio": "1. Entrada", "natureza": "ilustrativo",
+      "caracteristicas": [["Conteúdo previsto", "Fusível por módulo, filtro EMI, limitação de corrente de partida, proteção contra sobretensão"]],
+      "funcao": "Protege os conversores e a fonte: fusível individual por BCM, filtro de ruído conduzido e controle da corrente ao ligar.",
+      "motivo": "Os módulos não têm fusível interno e o fabricante orienta proteção dedicada no lado de alta tensão.",
+      "limitacoes": "Componentes não dimensionados; o bloco representa a função, não um produto.",
+      "docs": [["Vicor BCM4414xH0E5035 — datasheet Rev 1.2", "https://edit.vicorpower.com/documents/datasheets/ds-BCM4414xH0E5035yzz-VICOR.pdf", "p. 3 (fusível no lado HI)"]]
+    },
+    "bcm": {
+      "nome": "Conversor de razão fixa (BCM)", "fabricante": "Vicor Corporation", "modelo": "BCM4414VH0E5035T02 (série BCM4414xH0E5035)", "quantidade": 2,
+      "categoria": "Conversor CC-CC isolado, razão fixa", "estagio": "2. Primeiro estágio", "natureza": "real",
+      "caracteristicas": [
+        ["Tensão de entrada", "500–800 V CC [F p. 6]"], ["Relação de transformação", "K = 1/16 [F p. 6]"],
+        ["Tensão de saída", "31,3–50 V em vazio; ≈ 37,1 V a 600 V sob carga [E]"],
+        ["Corrente", "35 A contínuos (T_case ≤ 70 °C) [F p. 6]; ≈ 21,9 A por módulo no projeto [E]"],
+        ["Potência", "≈ 1,3 kW por módulo a 600 V [E]; 1.630 W os dois juntos [E]"],
+        ["Rendimento", "97,2 % típ. a 650 V/35 A; ≥ 94,7 % em 500–800 V [F p. 6]; ≈ 96,5 % estimado no projeto [E]"],
+        ["Isolamento", "4.300 V CC entrada–saída [F p. 5]"], ["Dimensões", "110,55 × 35,54 × 9,40 mm [F p. 1]"]],
+      "funcao": "Reduz a tensão de 600 V para cerca de 37 V numa razão fixa de 1/16 e isola galvanicamente a entrada da saída, sem regular.",
+      "motivo": "Opera em razão fixa no seu ponto de maior rendimento e aceita 600 V no centro da faixa de entrada (500–800 V).",
+      "problema": "Transforma uma tensão alta, difícil de regular diretamente para 15 V, num barramento baixo e isolado.",
+      "anterior": "Recebe os 600 V CC da entrada, já protegidos e filtrados.",
+      "seguinte": "Entrega o barramento intermediário de ≈ 37 V, que alimenta os seis DCMs.",
+      "limitacoes": "Saída não regulada (acompanha a entrada); um módulo sozinho entrega no máximo ≈ 1,3 kW a 600 V; partilha de corrente depende de impedâncias casadas.",
+      "docs": [["Vicor BCM4414xH0E5035 — datasheet Rev 1.2 (out. 2020)", "https://edit.vicorpower.com/documents/datasheets/ds-BCM4414xH0E5035yzz-VICOR.pdf", "p. 1, 5, 6, 20, 22"]]
+    },
+    "barramento_37v": {
+      "nome": "Barramento intermediário (≈ 37 V)", "fabricante": "—", "modelo": "Barra conceitual", "quantidade": 1,
+      "categoria": "Distribuição", "estagio": "3. Barramento intermediário", "natureza": "ilustrativo",
+      "caracteristicas": [["Tensão", "≈ 37,1 V (37,5 V em vazio) [E]"], ["Corrente", "≈ 43,9 A [E]"], ["Potência", "≈ 1.630 W [E]"], ["Faixa possível", "31,3–50 V conforme a entrada (500–800 V)"]],
+      "funcao": "Liga a saída dos dois BCMs à entrada dos seis DCMs.",
+      "motivo": "Separa a redução de tensão (estágio 1) da regulação (estágio 2).",
+      "limitacoes": "Capacitância limitada a 235 µF por BCM em arranjo [F BCM p. 7]; geometria ilustrativa.",
+      "docs": [["Vicor BCM4414xH0E5035 — datasheet Rev 1.2", "https://edit.vicorpower.com/documents/datasheets/ds-BCM4414xH0E5035yzz-VICOR.pdf", "p. 7"]]
+    },
+    "dcm": {
+      "nome": "Conversor regulado de 15 V (DCM)", "fabricante": "Vicor Corporation", "modelo": "DCM3623T50M17C2T00 (série DCM3623x50M17C2)", "quantidade": 6,
+      "categoria": "Conversor CC-CC isolado e regulado", "estagio": "4. Segundo estágio", "natureza": "real",
+      "caracteristicas": [
+        ["Tensão de entrada", "16–50 V CC [F p. 7]"], ["Tensão de saída", "15,0 V (ajuste 9–16,5 V) [F p. 7]"],
+        ["Corrente", "21,4 A nominal [F p. 7]; ≈ 16,7 A por módulo no projeto (78 %) [E]"],
+        ["Potência", "320 W por módulo [F p. 7]; 1.920 W de capacidade com 6"],
+        ["Rendimento", "92,4 % típ.; 89,5 % mín. em linha e temperatura [F p. 7]; ≈ 92 % no projeto [E]"],
+        ["Isolamento", "2.250 V CC [F p. 6]"], ["Dimensões", "38,72 × 22,80 × 7,21 mm [F p. 1]"],
+        ["Paralelismo", "Até 8 unidades (2.560 W), sem barramento de partilha [F p. 19]"]],
+      "funcao": "Regula o barramento de ≈ 37 V para 15 V. Os seis módulos dividem a corrente pela inclinação da característica de saída de cada um (reta de carga).",
+      "motivo": "A faixa de entrada (16–50 V) cobre todo o barramento possível e o fabricante qualifica o arranjo em paralelo.",
+      "problema": "Entrega os 15 V regulados e soma 100 A num único barramento de saída.",
+      "anterior": "Recebe o barramento intermediário dos BCMs.",
+      "seguinte": "Alimenta o barramento de 15 V / 100 A das cargas do ROV.",
+      "limitacoes": "A saída varia de 15,0 a 15,8 V com a carga; abaixo de 10 % de carga por módulo pode subir até +1,89 V [F p. 7]; taxa de subida da entrada ≤ 1 V/µs [F p. 6].",
+      "docs": [["Vicor DCM3623x50M17C2 — datasheet Rev 1.7 (jun. 2024)", "https://edit.vicorpower.com/documents/datasheets/DCM3623x50M17C2yzz_ds.pdf", "p. 1, 6, 7, 19, 20, 22"]]
+    },
+    "barramento_15v": {
+      "nome": "Barramento de saída (15 V / 100 A)", "fabricante": "—", "modelo": "Barra conceitual", "quantidade": 1,
+      "categoria": "Distribuição", "estagio": "5. Distribuição de saída", "natureza": "ilustrativo",
+      "caracteristicas": [["Tensão", "≈ 15,17 V no ponto típico [E]"], ["Corrente", "100 A"], ["Potência", "1.500 W"]],
+      "funcao": "Reúne a corrente dos seis DCMs e a leva ao conector de saída.",
+      "motivo": "Um único barramento de 15 V, conforme o requisito do desafio.",
+      "limitacoes": "Dimensionamento de seção e conexões não feito; geometria ilustrativa.", "docs": []
+    },
+    "conector_saida": {
+      "nome": "Conector de saída (15 V CC)", "fabricante": "—", "modelo": "Conceitual (penetrador)", "quantidade": 1,
+      "categoria": "Conexão", "estagio": "6. Carga", "natureza": "ilustrativo",
+      "caracteristicas": [["Tensão", "15 V CC"], ["Corrente", "100 A"], ["Potência", "1.500 W"]],
+      "funcao": "Leva os 15 V / 100 A às cargas do ROV.", "motivo": "Indica o destino do fluxo de energia.",
+      "limitacoes": "Modelo e especificação do penetrador não definidos.", "docs": []
+    },
+    "placa_fria": {
+      "nome": "Placa fria", "fabricante": "—", "modelo": "Conceitual (alumínio)", "quantidade": 1,
+      "categoria": "Térmica / estrutura", "estagio": "Estrutura", "natureza": "ilustrativo",
+      "caracteristicas": [["Dimensões no modelo", "330 × 140 × 8 mm (hipótese)"], ["Calor a extrair", "≈ 190 W típico; até ≈ 270 W [E]"], ["Requisito", "R_θ placa→parede ≤ 0,08 K/W [E]"]],
+      "funcao": "Base de montagem dos módulos e caminho de condução do calor até a parede da garrafa.",
+      "motivo": "BCM e DCM são resfriados pela face plana; a garrafa selada não permite ventilação.",
+      "limitacoes": "Requer simulação térmica; dimensões hipotéticas.", "docs": []
+    },
+    "suporte": {
+      "nome": "Suporte da placa fria", "fabricante": "—", "modelo": "Conceitual", "quantidade": 2,
+      "categoria": "Estrutura", "estagio": "Estrutura", "natureza": "ilustrativo",
+      "caracteristicas": [["Dimensões no modelo", "300 × 10 × 41 mm (hipótese)"]],
+      "funcao": "Fixa a placa fria à parede interna e conduz calor até o invólucro.",
+      "motivo": "Representação mínima da fixação.", "limitacoes": "Sem projeto mecânico.", "docs": []
+    }
+  },
+  "objetos": {
+    "garrafa_tubo_superior": {"grupo": "carcaca", "rotulo": "Garrafa — metade superior", "carcaca": true, "explode": [0, 0.17, 0]},
+    "garrafa_tubo_inferior": {"grupo": "carcaca", "rotulo": "Garrafa — metade inferior", "carcaca": true, "explode": [0, -0.13, 0]},
+    "garrafa_tampa_entrada": {"grupo": "tampa", "rotulo": "Tampa de entrada", "carcaca": true, "explode": [-0.12, 0, 0]},
+    "garrafa_tampa_saida": {"grupo": "tampa", "rotulo": "Tampa de saída", "carcaca": true, "explode": [0.12, 0, 0]},
+    "conector_entrada_600v": {"grupo": "conector_entrada", "rotulo": "Conector de entrada 600 V", "explode": [-0.17, 0, 0]},
+    "conector_saida_15v": {"grupo": "conector_saida", "rotulo": "Conector de saída 15 V", "explode": [0.17, 0, 0]},
+    "placa_fria": {"grupo": "placa_fria", "rotulo": "Placa fria", "explode": [0, -0.03, 0]},
+    "suporte_esquerdo": {"grupo": "suporte", "rotulo": "Suporte esquerdo", "explode": [0, -0.07, 0.03]},
+    "suporte_direito": {"grupo": "suporte", "rotulo": "Suporte direito", "explode": [0, -0.07, -0.03]},
+    "protecao_entrada": {"grupo": "protecao", "rotulo": "Proteção e filtro de entrada", "explode": [-0.03, 0.06, 0]},
+    "bcm_1": {"grupo": "bcm", "rotulo": "BCM #1", "explode": [0, 0.07, 0.025]},
+    "bcm_2": {"grupo": "bcm", "rotulo": "BCM #2", "explode": [0, 0.07, -0.025]},
+    "barramento_37v": {"grupo": "barramento_37v", "rotulo": "Barramento ≈ 37 V", "explode": [0, 0.09, 0]},
+    "dcm_1": {"grupo": "dcm", "rotulo": "DCM #1", "explode": [-0.02, 0.1, 0.03]},
+    "dcm_2": {"grupo": "dcm", "rotulo": "DCM #2", "explode": [-0.02, 0.1, -0.03]},
+    "dcm_3": {"grupo": "dcm", "rotulo": "DCM #3", "explode": [0, 0.1, 0.03]},
+    "dcm_4": {"grupo": "dcm", "rotulo": "DCM #4", "explode": [0, 0.1, -0.03]},
+    "dcm_5": {"grupo": "dcm", "rotulo": "DCM #5", "explode": [0.02, 0.1, 0.03]},
+    "dcm_6": {"grupo": "dcm", "rotulo": "DCM #6", "explode": [0.02, 0.1, -0.03]},
+    "barramento_15v": {"grupo": "barramento_15v", "rotulo": "Barramento 15 V", "explode": [0.03, 0.09, 0]}
+  },
+  "fluxo": [
+    {"id": "entrada", "titulo": "Entrada de alimentação", "objetos": ["conector_entrada_600v", "protecao_entrada"],
+     "texto": "O barramento de 600 V CC do ROV entra pela tampa e passa pela proteção e pelo filtro.",
+     "valores": [["Tensão", "600 V"], ["Corrente", "≈ 2,82 A"], ["Potência", "≈ 1.690 W"]]},
+    {"id": "estagio1", "titulo": "Primeiro estágio — 2 × BCM4414", "objetos": ["bcm_1", "bcm_2"],
+     "texto": "Dois conversores de razão fixa (K = 1/16) em paralelo reduzem a tensão e isolam a carga, sem regular.",
+     "valores": [["Relação", "K = 1/16"], ["Corrente por módulo", "≈ 21,9 A (63 %)"], ["Rendimento", "≈ 96,5 % [E]"], ["Perdas", "≈ 59 W"]]},
+    {"id": "barramento", "titulo": "Barramento intermediário", "objetos": ["barramento_37v"],
+     "texto": "O barramento de ≈ 37 V liga os BCMs aos DCMs.",
+     "valores": [["Tensão", "≈ 37,1 V"], ["Corrente", "≈ 43,9 A"], ["Potência", "≈ 1.630 W"]]},
+    {"id": "estagio2", "titulo": "Segundo estágio — 6 × DCM3623", "objetos": ["dcm_1", "dcm_2", "dcm_3", "dcm_4", "dcm_5", "dcm_6"],
+     "texto": "Seis conversores regulados em arranjo produzem 15 V e dividem a corrente pela reta de carga.",
+     "valores": [["Saída", "15 V regulados"], ["Corrente por módulo", "≈ 16,7 A (78 %)"], ["Rendimento", "≈ 92 % [E]"], ["Perdas", "≈ 130 W"]]},
+    {"id": "saida", "titulo": "Distribuição de saída", "objetos": ["barramento_15v"],
+     "texto": "O barramento de 15 V reúne a corrente dos seis DCMs.",
+     "valores": [["Tensão", "≈ 15,17 V"], ["Corrente", "100 A"], ["Potência", "1.500 W"]]},
+    {"id": "carga", "titulo": "Alimentação da carga", "objetos": ["conector_saida_15v"],
+     "texto": "Os 15 V / 100 A saem pela tampa para as cargas do ROV.",
+     "valores": [["Potência entregue", "1.500 W"], ["Rendimento global", "≈ 88,8 % (84,8 % pior caso) [E]"], ["Calor na garrafa", "≈ 190 W"]]}
+  ]
+}

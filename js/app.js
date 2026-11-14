@@ -116,7 +116,7 @@
     { route: 'documentos', label: 'Documentos', icon: 'file', view: 'documentos' },
     { route: 'entregaveis', label: 'Entregáveis', icon: 'flag', view: 'entregaveis' },
     { sep: true },
-    { acao: 'apresentacao', label: 'Apresentação', icon: 'slides', tag: 'Em breve' },
+    { route: 'apresentacao', label: 'Apresentação', icon: 'slides', view: 'apresentacao' },
     { route: 'admin', label: 'Administração', icon: 'settings', view: 'admin', equipe: true },
   ];
   /** Itens visíveis para o usuário atual (visitante vê tudo em modo leitura, menos a administração). */
@@ -140,7 +140,11 @@
   };
 
   let renderSeq = 0;
+  let saida = [];
+  /** Registra uma função para liberar recursos quando o usuário sair da tela atual (ex.: WebGL da Apresentação). */
+  HK.onLeave = (fn) => { saida.push(fn); };
   HK.render = async () => {
+    saida.splice(0).forEach((fn) => { try { fn(); } catch (e) { console.warn(e); } });
     const r = HK.parseRoute();
     const item = navVisivel().find((n) => !n.sep && !n.external && !n.acao && n.route === r.name) || NAV[0];
     const view = HK.views[item.view];
@@ -276,14 +280,6 @@
     U.$('#menu-btn').addEventListener('click', () => { U.$('#sidebar').classList.add('open'); U.$('#scrim').hidden = false; });
     U.$('#scrim').addEventListener('click', closeSidebar);
     window.addEventListener('hashchange', HK.render);
-    // A apresentação ainda não tem conteúdo: o menu e o atalho só avisam (o arquivo apresentacao.html fica guardado).
-    document.addEventListener('click', (e) => {
-      const a = e.target.closest('[data-acao="apresentacao"]');
-      if (!a) return;
-      e.preventDefault();
-      closeSidebar();
-      U.toast('A apresentação ainda está sem conteúdo. Ela será montada quando a solução estiver definida.', 'info');
-    });
     HK.render();
   }
 

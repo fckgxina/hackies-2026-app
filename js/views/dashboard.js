@@ -43,7 +43,7 @@
           <a class="shortcut" href="#/gastos">${U.icon('wallet')}<span>Gastos</span></a>
           <a class="shortcut" href="#/documentos">${U.icon('file')}<span>Documentos</span></a>
           <a class="shortcut" href="#/entregaveis">${U.icon('flag')}<span>Entregáveis</span></a>
-          ${vis ? '' : `<a class="shortcut" href="#" data-acao="apresentacao">${U.icon('slides')}<span>Apresentação<small>em breve · sem conteúdo</small></span></a>
+          ${vis ? '' : `<a class="shortcut" href="#/apresentacao">${U.icon('slides')}<span>Apresentação<small>modelo 3D da garrafa</small></span></a>
           <a class="shortcut" href="${U.esc(HK.obsidianHref('00 - Painel Principal'))}" title="Abre o vault no Obsidian (precisa do Obsidian instalado com o vault)">${U.icon('book')}<span>Vault Obsidian</span></a>`}
         </div>
 

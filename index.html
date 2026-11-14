@@ -7,6 +7,8 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23f5b301'/%3E%3Cpath d='M13 4 7 13h4l-1 7 6-9h-4z' fill='%231a1300'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/styles.css">
+  <!-- Three.js (versão fixa) para o visualizador 3D da aba Apresentação; carregado só quando a aba é aberta -->
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 </head>
 <body>
   <div id="boot" class="boot"><div class="spinner" aria-hidden="true"></div><p>Carregando…</p></div>
@@ -53,6 +55,7 @@
   <script src="js/views/documentos.js"></script>
   <script src="js/views/entregaveis.js"></script>
   <script src="js/views/admin.js"></script>
+  <script src="js/views/apresentacao.js"></script>
   <script>HK.boot();</script>
 </body>
 </html>

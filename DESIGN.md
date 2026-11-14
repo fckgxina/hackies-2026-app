@@ -84,7 +84,8 @@ Grafite industrial com **âmbar de energia**. O âmbar é **exclusivo da ação*
 - **PC com mouse (≥ 861 px):** o menu fica recolhido num trilho de 64 px, só com ícones, e **abre ao passar o mouse** ou ao receber foco pelo teclado, **por cima do conteúdo**, sem empurrar a página.
 - **Tablet, celular e telas de toque:** o menu fica escondido e abre pelo botão ☰ como gaveta; toque fora para fechar.
 - **Largura:** o conteúdo é fluido (sem largura máxima) e termina na mesma margem do cabeçalho em qualquer zoom.
-- **Item sem conteúdo:** fica no menu com a etiqueta "Em breve" e, ao clicar, mostra um aviso. Hoje isso vale para a Apresentação; o arquivo `apresentacao.html` está guardado, sem link.
+- **Item sem conteúdo:** fica no menu com a etiqueta "Em breve" e, ao clicar, mostra um aviso.
+- **Apresentação (desde 14/11/2026):** a aba contém o visualizador 3D da garrafa (`js/viewer3d/visualizador.js`, classes `.v3d-*`), carregado só ao abrir a aba e destruído ao sair (`HK.onLeave`). As seções futuras da apresentação entram em `#apr-secoes`. O antigo `apresentacao.html` (slides) continua guardado, sem link.
 
 ## 6. Verificação obrigatória
 
