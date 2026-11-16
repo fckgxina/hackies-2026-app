@@ -1,0 +1,691 @@
+{
+ "arquivo": "garrafa_rov_web_v002.glb",
+ "versao": "v001",
+ "unidade": "metro",
+ "eixos": "glTF (Y para cima)",
+ "fonte": "08_ASSEMBLY/e8_garrafa_v001.blend (Blender 5.3)",
+ "aviso": "Modelo conceitual. As animações são representações visuais, não instruções de manutenção.",
+ "animacao": {
+  "nome_no_glb": "um clipe por objeto, todos na mesma linha do tempo: tocar todos juntos e controlar o tempo do mixador (AnimationMixer.setTime) pelos trechos abaixo",
+  "fps_origem": 24,
+  "quadro_inicial": 1,
+  "trechos": {
+   "A1": {
+    "titulo": "Separação das tampas",
+    "quadros": [
+     1,
+     96
+    ],
+    "segundos": [
+     0.0,
+     3.958
+    ]
+   },
+   "A2": {
+    "titulo": "Retirada do trenó",
+    "quadros": [
+     101,
+     220
+    ],
+    "segundos": [
+     4.167,
+     9.125
+    ]
+   },
+   "A3": {
+    "titulo": "Visualização dos módulos",
+    "quadros": [
+     225,
+     368
+    ],
+    "segundos": [
+     9.333,
+     15.292
+    ]
+   },
+   "A4": {
+    "titulo": "Montagem do conjunto",
+    "quadros": [
+     373,
+     564
+    ],
+    "segundos": [
+     15.5,
+     23.458
+    ]
+   },
+   "A5": {
+    "titulo": "Rotação de 360°",
+    "quadros": [
+     569,
+     760
+    ],
+    "segundos": [
+     23.667,
+     31.625
+    ]
+   }
+  },
+  "cabos_ocultos_segundos": [
+   [
+    9.333,
+    15.292
+   ],
+   [
+    15.5,
+    18.312
+   ]
+  ],
+  "cabos": [
+   "ROV-BUS-001",
+   "ROV-BUS-001-SUPORTE",
+   "ROV-BUS-002",
+   "ROV-BUS-002-SUPORTE",
+   "ROV-CBL-BUS-001",
+   "ROV-CBL-BUS-002",
+   "ROV-CBL-ENT-001",
+   "ROV-CBL-HAR-001",
+   "ROV-CBL-HAR-002",
+   "ROV-CBL-HI-1N",
+   "ROV-CBL-HI-1P",
+   "ROV-CBL-HI-2N",
+   "ROV-CBL-HI-2P",
+   "ROV-CBL-LO-1N",
+   "ROV-CBL-LO-1P",
+   "ROV-CBL-LO-2N",
+   "ROV-CBL-LO-2P",
+   "ROV-CBL-PCB-001",
+   "ROV-CBL-PCB-002",
+   "ROV-CBL-SAI-001",
+   "ROV-CBL-SAI-002",
+   "ROV-CBL-SIG-001",
+   "ROV-CBL-SIG-002",
+   "ROV-LUG-HI-1N",
+   "ROV-LUG-HI-1P",
+   "ROV-LUG-HI-2N",
+   "ROV-LUG-HI-2P",
+   "ROV-LUG-LO-1N",
+   "ROV-LUG-LO-1P",
+   "ROV-LUG-LO-2N",
+   "ROV-LUG-LO-2P"
+  ]
+ },
+ "materiais_detalhe": {
+  "M_aluminio_usinado": {
+   "rug": [
+    0.27,
+    0.36
+   ],
+   "escala": 1400,
+   "aniso": 0.25,
+   "estrias": 0.02
+  },
+  "M_aluminio_anodizado": {
+   "rug": [
+    0.47,
+    0.57
+   ],
+   "escala": 700
+  },
+  "M_aco_inox": {
+   "rug": [
+    0.2,
+    0.3
+   ],
+   "escala": 400
+  },
+  "M_polimero_preto": {
+   "rug": [
+    0.52,
+    0.64
+   ],
+   "escala": 900,
+   "relevo": [
+    0.15,
+    2200
+   ]
+  },
+  "M_polimero_preto_fosco": {
+   "rug": [
+    0.56,
+    0.66
+   ],
+   "escala": 900,
+   "relevo": [
+    0.12,
+    2600
+   ]
+  },
+  "M_isolante_interno": {
+   "rug": [
+    0.55,
+    0.7
+   ],
+   "escala": 200
+  },
+  "M_latao_terminal": {
+   "rug": [
+    0.3,
+    0.42
+   ],
+   "escala": 220,
+   "cor2": [
+    0.7,
+    0.56,
+    0.34
+   ]
+  },
+  "M_cobre_barra": {
+   "rug": [
+    0.25,
+    0.4
+   ],
+   "escala": 140,
+   "cor2": [
+    0.78,
+    0.46,
+    0.32
+   ]
+  },
+  "M_pino_cobre": {
+   "rug": [
+    0.25,
+    0.35
+   ],
+   "escala": 500,
+   "cor2": [
+    0.8,
+    0.58,
+    0.42
+   ]
+  },
+  "M_cobre_camada": {
+   "rug": [
+    0.35,
+    0.45
+   ],
+   "escala": 500,
+   "cor2": [
+    0.78,
+    0.55,
+    0.38
+   ]
+  },
+  "M_laminado_faixa": {
+   "rug": [
+    0.32,
+    0.45
+   ],
+   "escala": 400,
+   "cor2": [
+    0.5,
+    0.39,
+    0.15
+   ]
+  },
+  "M_estanho": {
+   "rug": [
+    0.35,
+    0.45
+   ],
+   "escala": 500
+  },
+  "M_placa_fr4": {
+   "rug": [
+    0.4,
+    0.55
+   ],
+   "escala": 180,
+   "verniz": [
+    0.7,
+    0.12
+   ]
+  },
+  "M_manta_termica": {
+   "rug": [
+    0.8,
+    0.92
+   ],
+   "escala": 220,
+   "relevo": [
+    0.1,
+    900
+   ]
+  },
+  "M_borracha_vedacao": {
+   "rug": [
+    0.55,
+    0.7
+   ],
+   "escala": 400
+  },
+  "M_ceramica_mlcc": {
+   "rug": [
+    0.45,
+    0.55
+   ],
+   "escala": 900
+  },
+  "M_ceramica_branca": {
+   "rug": [
+    0.5,
+    0.6
+   ],
+   "escala": 600
+  },
+  "M_ferrite": {
+   "rug": [
+    0.5,
+    0.62
+   ],
+   "escala": 500,
+   "relevo": [
+    0.08,
+    3000
+   ]
+  },
+  "M_capa_eletrolitico": {
+   "rug": [
+    0.3,
+    0.4
+   ],
+   "escala": 300
+  },
+  "M_aluminio_lata": {
+   "rug": [
+    0.25,
+    0.35
+   ],
+   "escala": 400
+  },
+  "M_polimero_branco": {
+   "rug": [
+    0.45,
+    0.55
+   ],
+   "escala": 400
+  },
+  "M_placa_fr4_conector": {
+   "rug": [
+    0.4,
+    0.55
+   ],
+   "escala": 400
+  },
+  "M_acrilico": {
+   "rug": [
+    0.01,
+    0.035
+   ],
+   "escala": 60
+  },
+  "M_cabo_vermelho": {
+   "rug": [
+    0.4,
+    0.52
+   ],
+   "escala": 900
+  },
+  "M_cabo_preto": {
+   "rug": [
+    0.4,
+    0.52
+   ],
+   "escala": 900
+  },
+  "M_cabo_cinza": {
+   "rug": [
+    0.45,
+    0.56
+   ],
+   "escala": 900
+  }
+ },
+ "grupos": {
+  "01_BCM4414": [
+   "ROV-BCM-001",
+   "ROV-BCM-002"
+  ],
+  "02_DCM3623": [
+   "ROV-DCM-001",
+   "ROV-DCM-002",
+   "ROV-DCM-003",
+   "ROV-DCM-004",
+   "ROV-DCM-005",
+   "ROV-DCM-006"
+  ],
+  "03_COLD_PLATE": [
+   "ROV-PLATE-001",
+   "ROV-TIM-BCM-001",
+   "ROV-TIM-BCM-002",
+   "ROV-TIM-DCM-001",
+   "ROV-TIM-DCM-002",
+   "ROV-TIM-DCM-003",
+   "ROV-TIM-DCM-004",
+   "ROV-TIM-DCM-005",
+   "ROV-TIM-DCM-006"
+  ],
+  "04_SLED": [
+   "ROV-SLED-001"
+  ],
+  "05_PCB": [
+   "ROV-C1-001",
+   "ROV-C1-002",
+   "ROV-C1-003",
+   "ROV-C1-004",
+   "ROV-C1-005",
+   "ROV-C1-006",
+   "ROV-C1-007",
+   "ROV-C1-008",
+   "ROV-C1-009",
+   "ROV-C1-010",
+   "ROV-C1-011",
+   "ROV-C1-012",
+   "ROV-C1-013",
+   "ROV-C1-014",
+   "ROV-C1-015",
+   "ROV-C1-016",
+   "ROV-C1-017",
+   "ROV-C1-018",
+   "ROV-C1-019",
+   "ROV-C1-020",
+   "ROV-C1-021",
+   "ROV-C1-022",
+   "ROV-C1-023",
+   "ROV-C1-024",
+   "ROV-C2-001",
+   "ROV-C2-002",
+   "ROV-C2-003",
+   "ROV-C2-004",
+   "ROV-C2-005",
+   "ROV-C2-006",
+   "ROV-C2-007",
+   "ROV-C2-008",
+   "ROV-C2-009",
+   "ROV-C2-010",
+   "ROV-C2-011",
+   "ROV-C2-012",
+   "ROV-C2-013",
+   "ROV-C2-014",
+   "ROV-C2-015",
+   "ROV-C2-016",
+   "ROV-C2-017",
+   "ROV-C2-018",
+   "ROV-C2-019",
+   "ROV-C2-020",
+   "ROV-C2-021",
+   "ROV-C2-022",
+   "ROV-C2-023",
+   "ROV-C2-024",
+   "ROV-C2-025",
+   "ROV-C2-026",
+   "ROV-C2-027",
+   "ROV-C2-028",
+   "ROV-C2-029",
+   "ROV-C2-030",
+   "ROV-C2-031",
+   "ROV-C2-032",
+   "ROV-C2-033",
+   "ROV-C2-034",
+   "ROV-C2-035",
+   "ROV-C2-036",
+   "ROV-C2-037",
+   "ROV-C2-038",
+   "ROV-C2-039",
+   "ROV-C2-040",
+   "ROV-C2-041",
+   "ROV-C2-042",
+   "ROV-C2-043",
+   "ROV-C2-044",
+   "ROV-C2-045",
+   "ROV-C2-046",
+   "ROV-C2-047",
+   "ROV-C2-048",
+   "ROV-CBUS-001",
+   "ROV-CBUS-001-BORNE-001",
+   "ROV-CBUS-001-BORNE-002",
+   "ROV-CBUS-001-BORNE-003",
+   "ROV-CBUS-001-BORNE-004",
+   "ROV-CBUS-001-CAP-001",
+   "ROV-CBUS-001-CAP-002",
+   "ROV-CBUS-001-CAP-003",
+   "ROV-CBUS-001-ESP-001",
+   "ROV-CBUS-001-ESP-002",
+   "ROV-CBUS-001-ESP-003",
+   "ROV-CBUS-001-ESP-004",
+   "ROV-CBUS-001-PLACA",
+   "ROV-CD-001",
+   "ROV-CD-002",
+   "ROV-CD-003",
+   "ROV-CD-004",
+   "ROV-CD-005",
+   "ROV-CD-006",
+   "ROV-COUT-001",
+   "ROV-COUT-002",
+   "ROV-COUT-003",
+   "ROV-COUT-004",
+   "ROV-COUT-005",
+   "ROV-COUT-006",
+   "ROV-CY-001",
+   "ROV-CY-002",
+   "ROV-CY-003",
+   "ROV-CY-004",
+   "ROV-CY-005",
+   "ROV-CY-006",
+   "ROV-CY-007",
+   "ROV-CY-008",
+   "ROV-CY-009",
+   "ROV-CY-010",
+   "ROV-CY-011",
+   "ROV-CY-012",
+   "ROV-CY-013",
+   "ROV-CY-014",
+   "ROV-CY-015",
+   "ROV-CY-016",
+   "ROV-CY-017",
+   "ROV-CY-018",
+   "ROV-CY-019",
+   "ROV-CY-020",
+   "ROV-CY-021",
+   "ROV-CY-022",
+   "ROV-CY-023",
+   "ROV-CY-024",
+   "ROV-F1-001",
+   "ROV-F1-002",
+   "ROV-F1-003",
+   "ROV-F1-004",
+   "ROV-F1-005",
+   "ROV-F1-006",
+   "ROV-FHI-001",
+   "ROV-FHI-001-PRESILHA-A",
+   "ROV-FHI-001-PRESILHA-B",
+   "ROV-FHI-002",
+   "ROV-FHI-002-PRESILHA-A",
+   "ROV-FHI-002-PRESILHA-B",
+   "ROV-L1-001",
+   "ROV-L1-002",
+   "ROV-L1-003",
+   "ROV-L1-004",
+   "ROV-L1-005",
+   "ROV-L1-006",
+   "ROV-L2-001",
+   "ROV-L2-002",
+   "ROV-L2-003",
+   "ROV-L2-004",
+   "ROV-L2-005",
+   "ROV-L2-006",
+   "ROV-LB-001",
+   "ROV-LB-002",
+   "ROV-LB-003",
+   "ROV-LB-004",
+   "ROV-LB-005",
+   "ROV-LB-006",
+   "ROV-PCB-001",
+   "ROV-PCB-BARRA-001",
+   "ROV-PCB-SAIDA-001",
+   "ROV-PCB-SAIDA-002",
+   "ROV-PRE-001",
+   "ROV-PRE-001-BORNE",
+   "ROV-PRE-001-ESP-001",
+   "ROV-PRE-001-ESP-002",
+   "ROV-PRE-001-ESP-003",
+   "ROV-PRE-001-ESP-004",
+   "ROV-PRE-001-FILTRO",
+   "ROV-PRE-001-PLACA",
+   "ROV-PRE-001-SAIDA-001",
+   "ROV-PRE-001-SAIDA-002",
+   "ROV-PRE-001-SAIDA-003",
+   "ROV-PRE-001-SAIDA-004",
+   "ROV-RD-001",
+   "ROV-RD-002",
+   "ROV-RD-003",
+   "ROV-RD-004",
+   "ROV-RD-005",
+   "ROV-RD-006",
+   "ROV-RDM-001",
+   "ROV-RDM-002",
+   "ROV-RDM-003",
+   "ROV-RDM-004",
+   "ROV-RDM-005",
+   "ROV-RDM-006",
+   "ROV-ROUT-001",
+   "ROV-ROUT-002",
+   "ROV-ROUT-003",
+   "ROV-ROUT-004",
+   "ROV-ROUT-005",
+   "ROV-ROUT-006",
+   "ROV-SIG-001",
+   "ROV-SIG-002",
+   "ROV-SIG-003",
+   "ROV-SIG-004",
+   "ROV-SIG-005",
+   "ROV-SIG-006",
+   "ROV-SIG-007",
+   "ROV-SIG-008",
+   "ROV-SIG-009",
+   "ROV-SIG-010",
+   "ROV-SIG-011",
+   "ROV-SIG-012",
+   "ROV-SIG-013",
+   "ROV-SIG-014",
+   "ROV-SIG-015",
+   "ROV-SIG-016",
+   "ROV-SIG-017",
+   "ROV-SIG-018",
+   "ROV-SUP-001",
+   "ROV-SUP-001-CI-001",
+   "ROV-SUP-001-CI-002",
+   "ROV-SUP-001-CI-003",
+   "ROV-SUP-001-CON-001",
+   "ROV-SUP-001-CON-002",
+   "ROV-SUP-001-CON-003",
+   "ROV-SUP-001-CON-004",
+   "ROV-SUP-001-ESP-001",
+   "ROV-SUP-001-ESP-002",
+   "ROV-SUP-001-ESP-003",
+   "ROV-SUP-001-ESP-004",
+   "ROV-SUP-001-PLACA"
+  ],
+  "06_CABLES": [
+   "ROV-BUS-001",
+   "ROV-BUS-001-SUPORTE",
+   "ROV-BUS-002",
+   "ROV-BUS-002-SUPORTE",
+   "ROV-CBL-BUS-001",
+   "ROV-CBL-BUS-002",
+   "ROV-CBL-ENT-001",
+   "ROV-CBL-HAR-001",
+   "ROV-CBL-HAR-002",
+   "ROV-CBL-HI-1N",
+   "ROV-CBL-HI-1P",
+   "ROV-CBL-HI-2N",
+   "ROV-CBL-HI-2P",
+   "ROV-CBL-LO-1N",
+   "ROV-CBL-LO-1P",
+   "ROV-CBL-LO-2N",
+   "ROV-CBL-LO-2P",
+   "ROV-CBL-PCB-001",
+   "ROV-CBL-PCB-002",
+   "ROV-CBL-SAI-001",
+   "ROV-CBL-SAI-002",
+   "ROV-CBL-SIG-001",
+   "ROV-CBL-SIG-002",
+   "ROV-LUG-HI-1N",
+   "ROV-LUG-HI-1P",
+   "ROV-LUG-HI-2N",
+   "ROV-LUG-HI-2P",
+   "ROV-LUG-LO-1N",
+   "ROV-LUG-LO-1P",
+   "ROV-LUG-LO-2N",
+   "ROV-LUG-LO-2P"
+  ],
+  "07_CONNECTORS": [
+   "ROV-PEN-001",
+   "ROV-PEN-001-PORCA",
+   "ROV-PEN-002",
+   "ROV-PEN-002-PORCA",
+   "ROV-PEN-003",
+   "ROV-PEN-003-PORCA",
+   "ROV-PEN-004",
+   "ROV-PEN-004-PORCA"
+  ],
+  "08_OUTER_TUBE": [
+   "ROV-TUBE-001"
+  ],
+  "09_END_CAPS": [
+   "ROV-CAP-001",
+   "ROV-CAP-002",
+   "ROV-FLG-001",
+   "ROV-FLG-002",
+   "ROV-ORING-001",
+   "ROV-ORING-002",
+   "ROV-ORING-003",
+   "ROV-ORING-004",
+   "ROV-ORING-005",
+   "ROV-ORING-006"
+  ],
+  "10_FASTENERS": [
+   "ROV-FST-BCM-001",
+   "ROV-FST-BCM-002",
+   "ROV-FST-BCM-003",
+   "ROV-FST-BCM-004",
+   "ROV-FST-BCM-005",
+   "ROV-FST-BCM-006",
+   "ROV-FST-BCM-007",
+   "ROV-FST-BCM-008",
+   "ROV-FST-CAP-001",
+   "ROV-FST-CAP-002",
+   "ROV-FST-CAP-003",
+   "ROV-FST-CAP-004",
+   "ROV-FST-CAP-005",
+   "ROV-FST-CAP-006",
+   "ROV-FST-CAP-007",
+   "ROV-FST-CAP-008",
+   "ROV-FST-CAP-009",
+   "ROV-FST-CAP-010",
+   "ROV-FST-CAP-011",
+   "ROV-FST-CAP-012",
+   "ROV-FST-ESP-001",
+   "ROV-FST-ESP-002",
+   "ROV-FST-ESP-003",
+   "ROV-FST-ESP-004",
+   "ROV-FST-ESP-005",
+   "ROV-FST-ESP-006",
+   "ROV-FST-ESP-007",
+   "ROV-FST-ESP-008",
+   "ROV-FST-ESP-009",
+   "ROV-FST-ESP-010",
+   "ROV-FST-ESP-011",
+   "ROV-FST-ESP-012",
+   "ROV-FST-ESP-013",
+   "ROV-FST-ESP-014",
+   "ROV-FST-TRV-001",
+   "ROV-FST-TRV-002",
+   "ROV-FST-TRV-003",
+   "ROV-FST-TRV-004"
+  ],
+  "11_ASSEMBLY": [
+   "PIV-GIRO"
+  ]
+ }
+}

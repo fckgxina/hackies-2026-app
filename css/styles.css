@@ -609,3 +609,36 @@ html { accent-color: var(--accent); caret-color: var(--focus); scrollbar-color: 
   .v3d-dica { display: none; }
   .v3d-lista { left: var(--s3); width: auto; }
 }
+
+/* ---------- Apresentação da garrafa em rolagem (modelo v001) ---------- */
+.apg-grade { display: grid; grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.35fr); gap: var(--s4); align-items: start; }
+.apg-passos { display: flex; flex-direction: column; gap: var(--s4); padding-bottom: 35vh; min-width: 0; }
+.apg-passo { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; gap: var(--s2); scroll-margin-top: var(--s4); }
+.apg-abertura { min-height: 78vh; padding: var(--s2) 0; }
+.apg-abertura h2 { font-size: 26px; line-height: 1.15; }
+.apg-passo h3 { font-size: 18px; }
+.apg-sub { color: var(--text-2); font-weight: 600; margin-top: -4px; }
+.apg-sec { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-text); }
+.apg-sec-sep { padding: var(--s4) 0 0; border-top: 2px solid var(--accent); }
+.apg-num { font-size: 12px; color: var(--text-3); }
+.apg-ids { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.apg-ids code { font-size: 11.5px; padding: 1px 6px; border-radius: 6px; background: var(--surface-3); color: var(--text-2); }
+.apg-tab { width: 100%; border-collapse: collapse; font-size: 13px; }
+.apg-tab th { text-align: left; font-weight: 600; color: var(--text-2); padding: 5px 10px 5px 0; vertical-align: top; width: 40%; border-bottom: 1px solid var(--border); }
+.apg-tab td { padding: 5px 0; border-bottom: 1px solid var(--border); }
+.apg-tab td small { display: block; font-size: 11px; color: var(--text-3); }
+.apg-pos { font-size: 13.5px; }
+.apg-aviso { font-size: 12px; color: var(--text-3); border-left: 3px solid var(--accent); padding-left: var(--s2); }
+.apg-dica { font-size: 12.5px; color: var(--text-2); }
+.apg-ctl { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.apg-faixa { flex: 1; min-width: 160px; accent-color: var(--accent); }
+.apg-palco-col { position: sticky; top: var(--s3); height: calc(100vh - 110px); min-height: 360px; }
+.apg-palco { position: relative; height: 100%; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: radial-gradient(ellipse at 50% 40%, var(--surface) 0%, var(--surface-2) 75%); }
+.apg-rotulo { position: absolute; top: var(--s3); left: var(--s3); max-width: calc(100% - 2 * var(--s3)); font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); pointer-events: none; }
+.apr-legado-titulo { font-size: 15px; margin-top: var(--s5); }
+@media (max-width: 860px) {
+  .apg-grade { grid-template-columns: 1fr; gap: var(--s3); }
+  .apg-palco-col { order: -1; top: 0; height: 42vh; min-height: 260px; z-index: 2; }
+  .apg-passo { min-height: 55vh; }
+  .apg-abertura h2 { font-size: 21px; }
+}
