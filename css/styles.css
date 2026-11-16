@@ -494,7 +494,7 @@ html { accent-color: var(--accent); caret-color: var(--focus); scrollbar-color: 
   .card, .table-wrap, .kpi { box-shadow: none; }
 }
 
-/* ---------- Apresentação: visualizador 3D (js/viewer3d/visualizador.js) ---------- */
+/* ---------- Apresentação: peças do visualizador 3D (.v3d-*, usadas por js/viewer3d/apresentacao-garrafa.js) ---------- */
 .apr { display: flex; flex-direction: column; gap: var(--s4); }
 .v3d { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; position: relative; }
 .v3d .ic { width: 16px; height: 16px; }
@@ -635,7 +635,6 @@ html { accent-color: var(--accent); caret-color: var(--focus); scrollbar-color: 
 .apg-palco-col { position: sticky; top: var(--s3); height: calc(100vh - 110px); min-height: 360px; }
 .apg-palco { position: relative; height: 100%; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: radial-gradient(ellipse at 50% 40%, var(--surface) 0%, var(--surface-2) 75%); }
 .apg-rotulo { position: absolute; top: var(--s3); left: var(--s3); max-width: calc(100% - 2 * var(--s3)); font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); pointer-events: none; }
-.apr-legado-titulo { font-size: 15px; margin-top: var(--s5); }
 @media (max-width: 860px) {
   .apg-grade { grid-template-columns: 1fr; gap: var(--s3); }
   .apg-palco-col { order: -1; top: 0; height: 42vh; min-height: 260px; z-index: 2; }
